@@ -1,0 +1,5 @@
+
+.visualgdb/
+.vs/
+build/
+dependencies.lock
