@@ -22,3 +22,5 @@ void Spare(void);
 void BlinkHeartBeat(void);
 void CheckBluetoothConnection(void);
 void Init_TaskManager();
+
+void RS485_test();

@@ -49,7 +49,7 @@ const PFUNC F10HZ[NUM_10HZ] =
 	Spare,
 	Spare,
 	Spare,
-	Spare,
+	RS485_test,
 	Spare,
 };
 
@@ -141,4 +141,9 @@ void Init_TaskManager()
 	};
 	esp_timer_create(&systickTimerArgs, &systickTimer); // Create the timer
 	esp_timer_start_periodic(systickTimer, 250); // Start the timer in automatic reload mode with a period of 125 microseconds
+}
+
+void RS485_test()
+{
+	communication_add_string_to_serial_buffer(&ComUart2.TxBuffer, "0123456789");
 }

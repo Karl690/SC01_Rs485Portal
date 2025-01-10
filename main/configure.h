@@ -53,6 +53,7 @@ typedef struct
 	uint8_t tx_pin;
 	uint32_t baud;
 	uint8_t mode; //0: SIMPLE, 1: SECS
+	uint8_t is_485;
 } SERIAL_CONFIG;
 
 typedef struct

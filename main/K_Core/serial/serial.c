@@ -32,19 +32,21 @@ uint8_t serial_uart2_last_read_buffer[256];
 
 bool serial_valid_pins(uint8_t pin)
 {
-	if ((pin >= 10 && pin <= 14) || pin == 21) return true;
+	if ((pin >= 10 && pin <= 14) || pin == 21 || pin == SERIAL_485_TXD_PIN || pin == SERIAL_485_RXD_PIN) return true;
 	return false;
 }
 void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int baud, int rts_pin, int cts_pin, bool is485)
 {
 	if (!serial_valid_pins(tx_pin)) return;
 	if (!serial_valid_pins(rx_pin)) return;
+	
 	const uart_config_t uart_config = {
 		.baud_rate = baud,
 		.data_bits = UART_DATA_8_BITS,
 		.parity = UART_PARITY_DISABLE,
 		.stop_bits = UART_STOP_BITS_1,
 		.flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+		 .rx_flow_ctrl_thresh = 122,
 		.source_clk = UART_SCLK_APB,
 	};
 	// We won't use a buffer for sending data.
@@ -56,8 +58,12 @@ void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int baud, int rts_pi
 		// Set RS485 half duplex mode	
 		ESP_ERROR_CHECK(uart_set_mode(port, UART_MODE_RS485_HALF_DUPLEX));
 	}
-	// Enable UART DMA
-	uart_set_mode(port, UART_MODE_UART);
+	else
+	{
+		// Enable UART DMA
+		uart_set_mode(port, UART_MODE_UART);	
+	}
+	
 }
 
 
@@ -132,7 +138,16 @@ void serial_init()
 	if (systemconfig.serial1.tx_pin != systemconfig.serial2.tx_pin 
 		&& systemconfig.serial1.rx_pin != systemconfig.serial2.rx_pin)
 	{
-		serial_uart_init(UART_NUM_2, systemconfig.serial2.tx_pin, systemconfig.serial2.rx_pin, systemconfig.serial2.baud, SERIAL_UART2_RTS_PIN, SERIAL_UART2_CTS_PIN, false);	
+		if (systemconfig.serial2.is_485)
+		{
+			
+			serial_uart_init(UART_NUM_2, SERIAL_485_TXD_PIN, SERIAL_485_RXD_PIN, 9600, SERIAL_485_RTS_PIN, SERIAL_UART2_CTS_PIN, true);		
+		}
+		else
+		{
+			serial_uart_init(UART_NUM_2, systemconfig.serial2.tx_pin, systemconfig.serial2.rx_pin, systemconfig.serial2.baud, SERIAL_UART2_RTS_PIN, SERIAL_UART2_CTS_PIN, false);		
+		}
+		
 	}
 	
 	// initialize buffers

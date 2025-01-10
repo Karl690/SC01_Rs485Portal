@@ -167,7 +167,7 @@ void ui_settings_event_switch_cb(lv_event_t* e)
 	uint8_t* data = (uint8_t*)lv_event_get_user_data(e);
 	bool state = lv_obj_has_state(obj, LV_STATE_CHECKED);
 	
-	if (data == &systemconfig.bluetooth.server_enabled)
+	if (obj == ui_settings.ui_bluetooth.status)
 	{
 		if (state)
 		{
@@ -181,6 +181,24 @@ void ui_settings_event_switch_cb(lv_event_t* e)
 	else if (data == &systemconfig.opc.status)
 	{
 		
+	}
+	else if (obj == ui_settings.ui_serial2.ui_485)
+	{
+		if (state)
+		{
+			lv_obj_add_flag(ui_settings.ui_serial2.ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(ui_settings.ui_serial2.ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_tx, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+		}
+		else
+		{
+			lv_obj_clear_flag(ui_settings.ui_serial2.ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(ui_settings.ui_serial2.ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(ui_settings.ui_serial2.ui_485_tx, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(ui_settings.ui_serial2.ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+		}
+		systemconfig.serial2.is_485 = state;
 	}
 	else
 	{
@@ -275,7 +293,7 @@ void ui_settings_bluetooth_page_init()
 	obj = lv_switch_create(ui_settings_bluetooth_page);
 	lv_obj_set_pos(obj, 160, y);
 	if (systemconfig.bluetooth.server_enabled) lv_obj_add_state(obj, LV_STATE_CHECKED);
-	else lv_obj_add_state(obj, LV_STATE_CHECKED);
+	else lv_obj_clear_state(obj, LV_STATE_CHECKED);
 	lv_obj_add_event_cb(obj, ui_settings_event_switch_cb, LV_EVENT_VALUE_CHANGED, &systemconfig.bluetooth.server_enabled);
 	ui_settings.ui_bluetooth.status = obj;
 	
@@ -340,7 +358,7 @@ void ui_settings_wifi_page_init()
 	ui_settings.ui_wifi.password = obj;
 	
 	y += SETTINGS_LINE_SPACE;
-	obj = ui_create_label(ui_settings_wifi_page, "Auto connect: ", &lv_font_montserrat_14);
+	obj = ui_create_label(ui_settings_wifi_page, "Auto/ connect: ", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, 0, y + 5);
 	obj = lv_switch_create(ui_settings_wifi_page);
 	lv_obj_set_pos(obj, 160, y);
@@ -443,9 +461,9 @@ void ui_settings_serial_page_init(int index)
 {
 	UI_SERIAL* ui_serial = index == 0 ? &ui_settings.ui_serial1 : &ui_settings.ui_serial2;
 	SERIAL_CONFIG* serialConf = index == 0 ? &systemconfig.serial1 : &systemconfig.serial2;
-	
+	lv_obj_t* obj;
 	char szpins[100] = "GPIO_10\nGPIO_11\nGPIO_12\nGPIO_13\nGPIO_14\nGPIO_21";
-	lv_obj_t* obj = lv_obj_create(ui_settings_screen);
+	obj = lv_obj_create(ui_settings_screen);
 	lv_obj_set_size(obj, 375, 225); //480-105
 	lv_obj_set_pos(obj, 102, 55);
 	lv_obj_set_style_pad_all(obj, 10, LV_PART_MAIN);
@@ -453,8 +471,20 @@ void ui_settings_serial_page_init(int index)
 	else ui_settings_serial_page2 = obj;
 	lv_obj_t* page = obj;
 	
+	if (index == 1)
+	{	
+		obj = ui_create_label(ui_settings_serial_page2, "RS-485: ", &lv_font_montserrat_14);
+		lv_obj_set_pos(obj, 230, 4);
+		obj = lv_switch_create(ui_settings_serial_page2);
+		lv_obj_set_pos(obj, 300, 0);
+		ui_serial->ui_485 = obj;
+		
+		if (systemconfig.serial2.is_485) lv_obj_add_state(obj, LV_STATE_CHECKED);
+		else lv_obj_clear_state(obj, LV_STATE_CHECKED);
+		lv_obj_add_event_cb(obj, ui_settings_event_switch_cb, LV_EVENT_VALUE_CHANGED, &systemconfig.serial2.is_485);
+	}
 	obj = ui_create_label(page, index == 0? "Serial 1" : "Serial 2", &lv_font_montserrat_20);
-	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
+	lv_obj_set_pos(obj, 100, 0);
 	
 	uint16_t x = 0, y = 30;	
 	obj = ui_create_label(page, "RX_PIN: ", &lv_font_montserrat_14);
@@ -480,6 +510,31 @@ void ui_settings_serial_page_init(int index)
 	ui_serial->ui_tx_pin = obj;
 	lv_dropdown_set_selected(obj, get_index_from_value(serialConf->tx_pin));
 	
+	if (index == 1)
+	{
+		obj = ui_create_label(page, "GPIO_1", &lv_font_montserrat_14);
+		lv_obj_set_pos(obj, 70, y-35);
+		ui_serial->ui_485_rx = obj;
+		
+		obj = ui_create_label(page, "GPIO_42", &lv_font_montserrat_14);
+		lv_obj_set_pos(obj, 70, y);
+		ui_serial->ui_485_tx = obj;
+	}
+	
+	if (index == 1 && systemconfig.serial2.is_485)
+	{
+		lv_obj_clear_flag(ui_serial->ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_serial->ui_485_tx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_serial->ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_serial->ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
+	}
+	else if(index == 1 && !systemconfig.serial2.is_485)
+	{
+		lv_obj_add_flag(ui_serial->ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_serial->ui_485_tx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_serial->ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_serial->ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
+	}
 	y += 35;
 	obj = ui_create_label(page, "BAUD: ", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, 0, y);
