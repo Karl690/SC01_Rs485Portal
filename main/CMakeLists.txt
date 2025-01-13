@@ -85,7 +85,9 @@ idf_component_register(
                 	K_Core/communication/communication.c
                 	K_Core/communication/parser.c
                 	K_Core/execution/cmdprocessor.c
+                    K_Core/execution/M_Codes.c
                 	K_Core/amplifier/amplifier.c
+                    
                 INCLUDE_DIRS "."
                 REQUIRES
                 	LovyanGFX

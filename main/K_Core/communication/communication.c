@@ -218,7 +218,11 @@ void communication_process_rx_serial(COMPORT* WorkingComPort)
 				break;
 
 			case CMD_END_CHAR:  //if (rawChar==10) 0xA or 0xD  can trigger the end of line		
-				//WorkingComPort->RxAcknowledgeCounter++;
+				if (!(dump_display_sending || (!dump_display_sending && dump_display_waiting > 0)))
+				{
+					WorkingComPort->RxAcknowledgeCounter++;	
+				}
+				
 				WorkingComPort->CommandLineBuffer[WorkingComPort->CommandLineIdx] = WorkRxChar;
 				parser_add_line_to_commandbuffer(WorkingComPort);
 				WorkingComPort->UrgentFlag = 0; 

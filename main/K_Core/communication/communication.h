@@ -33,38 +33,6 @@
 #define COMMENT_STRING_LENGTH   	(256+3)	//+3 for leading and trailing delim + NULL_CHAR
 #define GCODE_STRING_ARG_LENGTH 	(256+3)	//+3 for leading and trailing delim + NULL_CHAR
 
-typedef struct {
-	char GCodeArgA[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgB[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgC[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgD[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgE[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgF[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgG[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgH[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgI[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgJ[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgK[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgL[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgM[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgN[MAX_CHARS_FOR_PARAMETER]; //line number
-	char GCodeArgO[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgP[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgQ[MAX_CHARS_FOR_PARAMETER]; //checksum -- using 'Q'
-	char GCodeArgR[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgS[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgT[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgU[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgV[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgW[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgX[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgY[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgZ[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgSplat[MAX_CHARS_FOR_PARAMETER];
-	char GCodeArgComment[COMMENT_STRING_LENGTH]; //buffer mismatch, working buffer is only 1024 long
-	char GcodeArgStringParam[GCODE_STRING_ARG_LENGTH];
-}AsciArgs;
-
 
 typedef enum {
 	COMTYPE_MAIN   = 0,
@@ -83,8 +51,6 @@ typedef struct {
 	uint16_t  	HeadRoom; // if more characters in the buffer than this number, do not allow more incoming commands
 	uint16_t  	ReadyForAtof; //when we have encountered a full line "\n"  flip up the flag to convert to Float.
 	uint16_t  	ArgumentLength; //how many charcters the incoming argument is so far
-	char *GCodeArgPtr; //how many charcters the incoming argument is so far
-	AsciArgs  AsciiArgs; //ascii buffers for each key character and their values in ascii, will convert to floats
 	char command[CMD_MAX_SIZE]; //how many charcters the incoming argument is so far
 	char* commandPtr;
 } ComBuffer;

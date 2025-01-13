@@ -145,5 +145,6 @@ void Init_TaskManager()
 
 void RS485_test()
 {
-	communication_add_string_to_serial_buffer(&ComUart2.TxBuffer, "0123456789");
+//	if(systemconfig.serial2.is_485)
+//		communication_add_string_to_serial_buffer(&ComUart2.TxBuffer, "0123456789");
 }
