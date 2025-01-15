@@ -188,15 +188,21 @@ void ui_settings_event_switch_cb(lv_event_t* e)
 		{
 			lv_obj_add_flag(ui_settings.ui_serial2.ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
 			lv_obj_add_flag(ui_settings.ui_serial2.ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(ui_settings.ui_serial2.ui_baud, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(ui_settings.ui_serial2.ui_mode, LV_OBJ_FLAG_HIDDEN);
 			lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_tx, LV_OBJ_FLAG_HIDDEN);
 			lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_baud, LV_OBJ_FLAG_HIDDEN);
 		}
 		else
 		{
 			lv_obj_clear_flag(ui_settings.ui_serial2.ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
 			lv_obj_clear_flag(ui_settings.ui_serial2.ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(ui_settings.ui_serial2.ui_baud, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(ui_settings.ui_serial2.ui_mode, LV_OBJ_FLAG_HIDDEN);
 			lv_obj_add_flag(ui_settings.ui_serial2.ui_485_tx, LV_OBJ_FLAG_HIDDEN);
 			lv_obj_add_flag(ui_settings.ui_serial2.ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(ui_settings.ui_serial2.ui_485_baud, LV_OBJ_FLAG_HIDDEN);
 		}
 		systemconfig.serial2.is_485 = state;
 	}
@@ -476,7 +482,7 @@ void ui_settings_serial_page_init(int index)
 		obj = ui_create_label(ui_settings_serial_page2, "RS-485: ", &lv_font_montserrat_14);
 		lv_obj_set_pos(obj, 230, 4);
 		obj = lv_switch_create(ui_settings_serial_page2);
-		lv_obj_set_pos(obj, 300, 0);
+		lv_obj_set_pos(obj, 290, 0);
 		ui_serial->ui_485 = obj;
 		
 		if (systemconfig.serial2.is_485) lv_obj_add_state(obj, LV_STATE_CHECKED);
@@ -519,22 +525,12 @@ void ui_settings_serial_page_init(int index)
 		obj = ui_create_label(page, "GPIO_42", &lv_font_montserrat_14);
 		lv_obj_set_pos(obj, 70, y);
 		ui_serial->ui_485_tx = obj;
+		
+		obj = ui_create_label(page, "9600", &lv_font_montserrat_14);
+		lv_obj_set_pos(obj, 70, y + 35);
+		ui_serial->ui_485_baud = obj;
 	}
 	
-	if (index == 1 && systemconfig.serial2.is_485)
-	{
-		lv_obj_clear_flag(ui_serial->ui_485_rx, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ui_serial->ui_485_tx, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(ui_serial->ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(ui_serial->ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
-	}
-	else if(index == 1 && !systemconfig.serial2.is_485)
-	{
-		lv_obj_add_flag(ui_serial->ui_485_rx, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(ui_serial->ui_485_tx, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ui_serial->ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ui_serial->ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
-	}
 	y += 35;
 	obj = ui_create_label(page, "BAUD: ", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, 0, y);
@@ -548,6 +544,25 @@ void ui_settings_serial_page_init(int index)
 	lv_dropdown_set_selected(obj, get_index_from_baud(serialConf->baud));
 	ui_serial->ui_baud = obj;
 
+	if (index == 1 && systemconfig.serial2.is_485)
+	{
+		lv_obj_clear_flag(ui_serial->ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_serial->ui_485_tx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_serial->ui_485_baud, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_serial->ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_serial->ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_serial->ui_baud, LV_OBJ_FLAG_HIDDEN);
+	}
+	else if (index == 1 && !systemconfig.serial2.is_485)
+	{
+		lv_obj_add_flag(ui_serial->ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_serial->ui_485_tx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_serial->ui_485_baud, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_serial->ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_serial->ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_serial->ui_baud, LV_OBJ_FLAG_HIDDEN);
+	}
+	
 	if (index == 1)
 	{
 		y += 35;

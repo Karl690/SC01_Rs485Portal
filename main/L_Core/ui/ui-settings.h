@@ -47,6 +47,7 @@ typedef struct
 	lv_obj_t* ui_485;
 	lv_obj_t* ui_485_tx;
 	lv_obj_t* ui_485_rx;
+	lv_obj_t* ui_485_baud;
 } UI_SERIAL;
 
 typedef struct
