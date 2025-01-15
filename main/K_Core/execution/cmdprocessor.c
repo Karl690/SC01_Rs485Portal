@@ -496,6 +496,7 @@ void InvalidateAllCmdArgs(GMCommandStructure *cmdPtr)
 
 void parseMGCode(char* cmd, int len)
 {
+	if (dump_display_sending || (!dump_display_sending && dump_display_waiting > 0)) return;
 	char RawRxChar;
 	char* GCodeArgPtr;
 	uint8_t ArgumentLength = 0;
@@ -615,7 +616,9 @@ void processMGCode()
 		switch ((int) ExecutionPtr->M)
 		{
 			
-		case 640: M_Code_M640();
+		case 640: M_Code_M640(); break;
+		case 641: M_Code_M641(); break;
+		case 642: M_Code_M642(); break;
 		}
 	}
 }

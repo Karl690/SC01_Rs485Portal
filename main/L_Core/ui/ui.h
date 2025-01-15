@@ -2,6 +2,11 @@
 #include "lvgl.h"
 #include "font/font.h"
 
+#define COLOR_WHITE				0xffffff
+#define COLOR_YELLOW				0xffff00
+#define COLOR_RED					0xff0000
+#define COLOR_BLUE					0x0000ff
+
 #define SCREEN_WIDTH				480
 #define SCREEN_HEIGHT				320
 #define SCREEN_PIXEL_SIZE			2
@@ -90,6 +95,7 @@ typedef enum
 	SCREEN_SDCARD,
 	SCREEN_MEG,
 	SCREEN_SECS,
+	SCREEN_NEWPS,
 	SCREEN_MEG_01,
 	SCREEN_TUNE,
 	SCREEN_COMM,

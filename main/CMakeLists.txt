@@ -26,6 +26,7 @@ idf_component_register(
                     L_Core/ui/ui-wifi.c
                 	L_Core/ui/ui-comm.c
                     L_Core/ui/ui-plot.c
+                    L_Core/ui/ui-newps.c
                 	L_Core/ui/images/btn_about.c
                 	L_Core/ui/images/copyright.c
                 	L_Core/ui/images/pct_ge.c
@@ -87,6 +88,7 @@ idf_component_register(
                 	K_Core/execution/cmdprocessor.c
                     K_Core/execution/M_Codes.c
                 	K_Core/amplifier/amplifier.c
+                    K_Core/supply/supply.c
                     
                 INCLUDE_DIRS "."
                 REQUIRES

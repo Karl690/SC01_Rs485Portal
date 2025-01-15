@@ -9,6 +9,7 @@ enum
 	UI_HOME_BTN_BLE,
 	UI_HOME_BTN_WIFI,
 	UI_HOME_BTN_SECS,
+	UI_HOME_BTN_NEWPS,
 	UI_HOME_BTN_SIMPLE,
 };
 extern lv_obj_t* ui_home_screen;

@@ -31,7 +31,7 @@ lv_obj_t* ui_comm_btn_ack;
 uint16_t ui_comm_log_head = 0;
 uint16_t ui_comm_log_tail = 0;
 
-void ui_come_call_event_button(uint8_t code, bool direct)
+void ui_comm_call_event_button(uint8_t code, bool direct)
 {
 	ui_send_button_event(SCREEN_COMM, code, direct);
 	switch (code)
@@ -67,7 +67,7 @@ void ui_come_call_event_button(uint8_t code, bool direct)
 void ui_comm_event_button_cb(lv_event_t* e)
 {
 	uint8_t code = (uint8_t)(int)lv_event_get_user_data(e);
-	ui_come_call_event_button(code, true);
+	ui_comm_call_event_button(code, true);
 }
 
 

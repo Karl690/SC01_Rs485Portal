@@ -23,6 +23,7 @@ void ui_home_call_event_button(uint8_t code, bool direct)
 	case UI_HOME_BTN_BLE: screen_id = SCREEN_BLUETOOTH; break;
 	case UI_HOME_BTN_WIFI: screen_id = SCREEN_WIFI; break;
 	case UI_HOME_BTN_SECS: screen_id = SCREEN_SECS; break;
+	case UI_HOME_BTN_NEWPS: screen_id = SCREEN_NEWPS; break;
 	case UI_HOME_BTN_SIMPLE: screen_id = SCREEN_SIMPLE; break;
 	}	
 	ui_transform_screen(screen_id);
@@ -115,8 +116,8 @@ void ui_home_screen_init(void)
 	lv_obj_set_pos(obj, x, y);
 	
 	x += BUTTON_WIDTH + gap_x;
-	obj = ui_home_create_button(ui_home_screen, &btnhome_07, &img_secs, "SECS");
-	lv_obj_add_event_cb(obj, ui_home_event_tranform_screen_cb, LV_EVENT_CLICKED, (void*)UI_HOME_BTN_SECS);
+	obj = ui_home_create_button(ui_home_screen, &btnhome_07, &img_secs, "NEW P/S");
+	lv_obj_add_event_cb(obj, ui_home_event_tranform_screen_cb, LV_EVENT_CLICKED, (void*)UI_HOME_BTN_NEWPS);
 	lv_obj_set_pos(obj, x, y);
 	
 	x += BUTTON_WIDTH + gap_x;

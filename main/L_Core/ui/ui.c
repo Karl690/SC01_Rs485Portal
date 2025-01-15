@@ -20,6 +20,7 @@
 #include "ui-comm.h"
 #include "ui-bluetooth.h"
 #include "ui-secs.h"
+#include "ui-newps.h"
 #include "ui-simple.h"
 #include "ui-plot.h"
 #include "ui-wifi.h"
@@ -361,6 +362,9 @@ void ui_transform_screen(uint8_t screen)
 	case SCREEN_SIMPLE:
 		active_screen = ui_simple_screen;
 		break;
+	case SCREEN_NEWPS:
+		active_screen = ui_newps_screen;
+		break;
 	case SCREEN_SDCARD:
 		active_screen = ui_sdcard_screen;
 		break;
@@ -513,6 +517,7 @@ void InitUI( void )
 	ui_comm_screen_init();	
 	ui_ble_screen_init();
 	ui_secs_screen_init();
+	ui_newps_screen_init();
 	ui_simple_screen_init();
 	ui_wifi_screen_init();
 

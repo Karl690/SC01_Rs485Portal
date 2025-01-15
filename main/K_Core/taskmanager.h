@@ -24,3 +24,4 @@ void CheckBluetoothConnection(void);
 void Init_TaskManager();
 
 void RS485_test();
+void RequestPowerSupplyStatus();

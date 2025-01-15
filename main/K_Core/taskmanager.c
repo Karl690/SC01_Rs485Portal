@@ -10,6 +10,7 @@
 #include "K_Core/execution/cmdprocessor.h"
 #include "K_Core/simple/simple.h"
 #include "K_Core/amplifier/amplifier.h"
+#include "K_Core/supply/supply.h"
 esp_timer_handle_t systickTimer;
 
 
@@ -61,7 +62,7 @@ const PFUNC F1HZ[NUM_1HZ] =
 	Spare,
 	Spare, //sps30_request_read,
 	CheckBluetoothConnection,
-	Spare, //amplifier_build_status_string,
+	RequestPowerSupplyStatus, //amplifier_build_status_string,
 	BlinkHeartBeat,
 };
 /*
@@ -147,4 +148,9 @@ void RS485_test()
 {
 //	if(systemconfig.serial2.is_485)
 //		communication_add_string_to_serial_buffer(&ComUart2.TxBuffer, "0123456789");
+}
+
+void RequestPowerSupplyStatus()
+{
+	supply_read_teslaman_status();
 }
