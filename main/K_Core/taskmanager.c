@@ -36,7 +36,7 @@ const PFUNC F100HZ[NUM_100HZ] =
 	adc_get_process_rawdata,
 	simple_parse_command, //serial_uart_check_rxtx, //Spare,
 	simple_send_dump_screen, //serial_rs485_check_rxtx, //Spare,
-	Spare,
+	supply_process_command_sequence,
 	Spare,
 	Spare,
 	Spare,

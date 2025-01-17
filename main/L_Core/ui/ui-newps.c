@@ -27,16 +27,16 @@ void ui_newps_call_event_button(uint8_t code, bool direct)
 		supply_turn_on_voltage();
 		break;
 	case UI_NEWPS_BTN_INC_200:
-		if (supply_desired_voltage + 200 <= SUPPLY_MAX_VOLTAGE) {
-			supply_desired_voltage += 200;
-			supply_set_teslaman_voltage_current(supply_desired_voltage + 200, 1);
+		if (supply_status_info.prog_voltage + 200 <= SUPPLY_MAX_VOLTAGE) {
+			supply_status_info.prog_voltage += 200;
+			supply_set_teslaman_voltage_current(supply_status_info.prog_voltage + 200, 1);
 		}
 		break;
 	case UI_NEWPS_BTN_DEC_200:
-		if (supply_desired_voltage - 200 >= SUPPLY_MIN_VOLTAGE)
+		if (supply_status_info.prog_voltage - 200 >= SUPPLY_MIN_VOLTAGE)
 		{
-			supply_desired_voltage -= 200;
-			supply_set_teslaman_voltage_current(supply_desired_voltage, 1);
+			supply_status_info.prog_voltage -= 200;
+			supply_set_teslaman_voltage_current(supply_status_info.prog_voltage, 1);
 		}
 		break;
 	}
@@ -51,10 +51,14 @@ void ui_newps_event_button_cb(lv_event_t* e)
 
 void ui_newps_update_indicator_timer(lv_timer_t * timer)
 {
-	sprintf(ui_temp_string, "%d", supply_desired_voltage / 1000);
+	sprintf(ui_temp_string, "%d", supply_status_info.prog_voltage / 1000);
 	lv_label_set_text(ui_newps_obj.slider_label, ui_temp_string);
-	sprintf(ui_temp_string, "PRG V=%.02fkV", supply_desired_voltage / 1000.0);
+	sprintf(ui_temp_string, "PRG V=%.02fkV", supply_status_info.prog_voltage / 1000.0);
 	lv_label_set_text(ui_newps_obj.prg, ui_temp_string);
+	
+	sprintf(ui_temp_string, "ACT V=%.02fkV", supply_status_info.actual_voltage / 1000.0);
+	lv_label_set_text(ui_newps_obj.act, ui_temp_string);
+	
 	sprintf(ui_temp_string, "CKSUM=%X", supply_checksum);
 	lv_label_set_text(ui_newps_obj.checksum, ui_temp_string);
 }
@@ -62,7 +66,7 @@ void ui_newps_update_indicator_timer(lv_timer_t * timer)
 
 void ui_newps_change_slide_value(int value)
 {
-	supply_desired_voltage = value;
+	supply_status_info.prog_voltage = value;
 	supply_set_teslaman_voltage_current(value, 1);
 }
 void ui_newps_slider_event_cb(lv_event_t * e)
@@ -119,7 +123,7 @@ void ui_newps_screen_init(void)
 	
 	y += button_h + gap;
 	obj = ui_create_button(ui_newps_screen, "PWR ON", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_PWRON);
-	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+	// ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	ui_newps_obj.pwron= obj;
 	lv_obj_set_pos(obj, x, y);
 	
@@ -158,8 +162,6 @@ void ui_newps_screen_init(void)
 	ui_newps_obj.checksum = obj;
 	lv_obj_set_pos(obj, x+220, y-25);
 	
-	
-	
 	obj = lv_obj_create(ui_newps_screen);
 	lv_obj_set_size(obj, SCREEN_WIDTH - button_large_width - gap * 3 - 50, SCREEN_HEIGHT - 120);
 	lv_obj_set_pos(obj, x, (button_h + gap) * 2 + gap); 
@@ -169,10 +171,10 @@ void ui_newps_screen_init(void)
 	
 	for (uint8_t i = 0; i < UI_LOG_MAX_LINE; i++)
 	{
-		obj = lv_label_create(ui_newps_obj.log_panel);
+		obj = ui_create_label(ui_newps_obj.log_panel, "", &mono_regualr_14);
 		lv_label_set_long_mode(obj, LV_LABEL_LONG_WRAP); /*Automatically break long lines*/
-		lv_obj_set_style_border_color(obj, lv_color_hex(0x550055), LV_PART_MAIN);
-		lv_obj_set_style_text_font(obj, &mono_regualr_20, LV_PART_MAIN);
+		// lv_obj_set_style_border_color(obj, lv_color_hex(0x550055), LV_PART_MAIN);
+		// lv_obj_set_style_text_font(obj, &mono_regualr_20, LV_PART_MAIN);
 		lv_obj_set_width(obj, lv_pct(95)); 
 		lv_obj_set_x(obj, 5); 
 		lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
@@ -191,7 +193,7 @@ void ui_newps_screen_init(void)
 	obj = lv_slider_create(ui_newps_screen);
 	lv_obj_set_size(obj, 10, 120);
 	lv_obj_set_pos(obj, x+15, y);
-	lv_slider_set_range(obj, SUPPLY_MIN_VOLTAGE / 1000, SUPPLY_MAX_VOLTAGE / 1000);
+	lv_slider_set_range(obj, SUPPLY_MIN_KVOLTAGE, SUPPLY_MAX_KVOLTAGE);
 	lv_slider_set_value(obj, 0, LV_ANIM_ON);
 	lv_obj_add_event_cb(obj, ui_newps_slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 	ui_newps_obj.slider = obj;
@@ -280,7 +282,7 @@ void ui_newps_add_event(const char* log, uint32_t color, bool ishex)
 		height = lv_obj_get_height(obj);
 		ypos += height + gap;
 	}
-	//lv_obj_scroll_to_y(ui_comm_display_panel, ypos, LV_ANIM_OFF);
+	lv_obj_scroll_to_y(ui_newps_obj.log_panel, ypos, LV_ANIM_OFF);
 }
 void ui_newps_add_char(const char code, uint32_t color)
 {
@@ -298,9 +300,24 @@ void ui_newps_add_char(const char code, uint32_t color)
 void ui_newps_add_log(const char* log, uint32_t color)
 {	
 	if (ui_newps_obj.log_panel->flags & LV_OBJ_FLAG_HIDDEN) return;
-	
+	ui_newps_add_event(log, color, false);
 }
 
+void ui_newps_add_command(uint8_t* buff, size_t len, bool inOut)
+{
+	memset(temp_string, 0, 256);
+	temp_string[0] = inOut? '<': '>';
+	temp_string[1] = inOut ? '<' : '>';
+	temp_string[2] = ' ';
+	char* temp = temp_string + 3;
+	for (uint8_t i = 0; i < len; i++)
+	{
+		sprintf(temp, "%02X ", buff[i]);
+		temp += 3;
+	}
+	if (ui_newps_obj.log_panel->flags & LV_OBJ_FLAG_HIDDEN) return;
+	ui_newps_add_event(temp_string, inOut ? UI_RECEIVE_COLOR : UI_SEND_COLOR, false);
+}
 void ui_newps_clear_log()
 {
 	ui_newps_log_head = 0;
@@ -311,7 +328,6 @@ void ui_newps_clear_log()
 	{
 		obj = lv_obj_get_child(ui_newps_obj.log_panel, i);
 		lv_label_set_text(obj, "");
-		lv_obj_set_x(obj, 5); 
 		lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
 	}
 }

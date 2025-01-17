@@ -26,6 +26,12 @@ typedef struct
 
 void ui_newps_screen_init(void);
 void ui_newps_add_line(const char* log, uint32_t color);
-void ui_newps_clear();
 void ui_newps_call_event_button(uint8_t code, bool direct);
 void ui_newps_change_slide_value(int value);
+
+void ui_newps_add_event(const char* log, uint32_t color, bool ishex);
+void ui_newps_add_char(const char code, uint32_t color);
+void ui_newps_add_log(const char* log, uint32_t color);
+void ui_newps_add_log(const char* log, uint32_t color);
+void ui_newps_add_command(uint8_t* buff, size_t len, bool inOut);
+void ui_newps_clear_log();

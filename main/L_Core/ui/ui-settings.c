@@ -184,26 +184,7 @@ void ui_settings_event_switch_cb(lv_event_t* e)
 	}
 	else if (obj == ui_settings.ui_serial2.ui_485)
 	{
-		if (state)
-		{
-			lv_obj_add_flag(ui_settings.ui_serial2.ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_add_flag(ui_settings.ui_serial2.ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_add_flag(ui_settings.ui_serial2.ui_baud, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_add_flag(ui_settings.ui_serial2.ui_mode, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_tx, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_rx, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_baud, LV_OBJ_FLAG_HIDDEN);
-		}
-		else
-		{
-			lv_obj_clear_flag(ui_settings.ui_serial2.ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_clear_flag(ui_settings.ui_serial2.ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_clear_flag(ui_settings.ui_serial2.ui_baud, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_clear_flag(ui_settings.ui_serial2.ui_mode, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_add_flag(ui_settings.ui_serial2.ui_485_tx, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_add_flag(ui_settings.ui_serial2.ui_485_rx, LV_OBJ_FLAG_HIDDEN);
-			lv_obj_add_flag(ui_settings.ui_serial2.ui_485_baud, LV_OBJ_FLAG_HIDDEN);
-		}
+		ui_settings_serial_485_visible(state);
 		systemconfig.serial2.is_485 = state;
 	}
 	else
@@ -462,7 +443,29 @@ void ui_settings_opc_page_init()
 	ui_settings.ui_opc.autostart = obj;
 }
 
-
+void ui_settings_serial_485_visible(bool enable)
+{
+	if (enable)
+	{
+		lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_tx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_settings.ui_serial2.ui_485_baud, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_settings.ui_serial2.ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_settings.ui_serial2.ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_settings.ui_serial2.ui_baud, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_settings.ui_serial2.ui_mode, LV_OBJ_FLAG_HIDDEN);
+	}
+	else 
+	{
+		lv_obj_add_flag(ui_settings.ui_serial2.ui_485_rx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_settings.ui_serial2.ui_485_tx, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_add_flag(ui_settings.ui_serial2.ui_485_baud, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_settings.ui_serial2.ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_settings.ui_serial2.ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_settings.ui_serial2.ui_baud, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ui_settings.ui_serial2.ui_mode, LV_OBJ_FLAG_HIDDEN);
+	}
+}
 void ui_settings_serial_page_init(int index)
 {
 	UI_SERIAL* ui_serial = index == 0 ? &ui_settings.ui_serial1 : &ui_settings.ui_serial2;
@@ -544,24 +547,6 @@ void ui_settings_serial_page_init(int index)
 	lv_dropdown_set_selected(obj, get_index_from_baud(serialConf->baud));
 	ui_serial->ui_baud = obj;
 
-	if (index == 1 && systemconfig.serial2.is_485)
-	{
-		lv_obj_clear_flag(ui_serial->ui_485_rx, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ui_serial->ui_485_tx, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ui_serial->ui_485_baud, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(ui_serial->ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(ui_serial->ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(ui_serial->ui_baud, LV_OBJ_FLAG_HIDDEN);
-	}
-	else if (index == 1 && !systemconfig.serial2.is_485)
-	{
-		lv_obj_add_flag(ui_serial->ui_485_rx, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(ui_serial->ui_485_tx, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(ui_serial->ui_485_baud, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ui_serial->ui_rx_pin, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ui_serial->ui_tx_pin, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ui_serial->ui_baud, LV_OBJ_FLAG_HIDDEN);
-	}
 	
 	if (index == 1)
 	{
@@ -809,6 +794,8 @@ void ui_settings_screen_init()
 	lv_obj_set_pos(obj, 238, 285);
 	
 	ui_settings_update_configuratiion();
+	ui_settings_serial_485_visible(systemconfig.serial2.is_485);
+	
 	ui_settings_initialized = true;
 }
 

@@ -1,11 +1,32 @@
 #pragma  once
 #include "main.h"
-#define SUPPLY_MAX_VOLTAGE 30000
-#define SUPPLY_MIN_VOLTAGE 0
-extern uint32_t supply_desired_voltage;
-extern uint32_t supply_desired_current;
-extern uint32_t supply_actual_voltage;
-extern uint32_t supply_actual_current;
+#include "K_Core/serial/serial.h"
+#define SUPPLY_MAX_VOLTAGE		30000
+#define SUPPLY_MAX_KVOLTAGE		30
+#define SUPPLY_MIN_VOLTAGE		0
+#define SUPPLY_MIN_KVOLTAGE		0
+
+#define SUPPLY_CMD_QUE_SIZE 0xf
+#define SUPPLY_CMD_MAX_LEN 40
+
+typedef struct
+{
+	uint8_t high_voltage_onoff;
+	uint32_t prog_voltage;
+	uint32_t prog_current;
+	uint32_t actual_voltage;
+	uint32_t actual_current;
+}SUPPLY_STATUS_INFO;
+typedef struct
+{
+	COMPORT* serial;
+	uint16_t que_tail;
+	uint16_t que_head;
+	char que_command[SUPPLY_CMD_QUE_SIZE][SUPPLY_CMD_MAX_LEN];
+	uint8_t waitingOfResponsive;
+}SUPPLY_OBJ;
+
+extern SUPPLY_STATUS_INFO supply_status_info;
 extern uint16_t supply_checksum;
 uint16_t supply_modbus_checksum(uint8_t* buf, size_t len);
 
@@ -22,3 +43,7 @@ void supply_turn_on_set_voltage();
 
 void supply_turn_off_voltage();
 void supply_turn_on_voltage();
+
+void supply_init();
+void supply_parse_incomming_line();
+void supply_process_command_sequence();

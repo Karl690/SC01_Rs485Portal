@@ -71,3 +71,4 @@ extern UI_SETTINGS ui_settings;
 
 void ui_settings_screen_init();
 void ui_settings_update_configuratiion();
+void ui_settings_serial_485_visible(bool enable);

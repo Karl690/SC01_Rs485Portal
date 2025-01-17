@@ -24,6 +24,7 @@
 #include "ui-simple.h"
 #include "ui-plot.h"
 #include "ui-wifi.h"
+#include "ui-newps.h"
 LV_IMG_DECLARE(img_pctge_mark);
 
 lv_obj_t * keyboard;
@@ -186,6 +187,9 @@ void ui_call_title_button_event(uint8_t screen_id, uint8_t button_id, bool direc
 		case SCREEN_SIMPLE:
 			ui_simple_clear();
 			break;
+		case SCREEN_NEWPS:
+			ui_newps_clear_log();
+			break;
 		}
 		break;
 	case UI_BTN_SWAP:
@@ -221,15 +225,13 @@ void ui_create_pct_title(lv_obj_t* parent, uint8_t screen)
 	lv_img_set_zoom(obj, 108);
 	lv_img_set_pivot(obj, 0, 0);
 	lv_obj_set_pos(obj, -10, -10);
-	lv_obj_add_event_cb(logbutton, ui_event_title_button_cb, LV_EVENT_CLICKED, (void*)UI_BTN_HOME);		
-	
+	lv_obj_add_event_cb(logbutton, ui_event_title_button_cb, LV_EVENT_CLICKED, (void*)UI_BTN_HOME);
 	
 	int x = 5;
 	int button_w = 60;
 	int button_large_width = 90;
 	int button_h = 50;
 	int gap = 5;
-	
 	
 	switch (screen)
 	{
@@ -238,7 +240,7 @@ void ui_create_pct_title(lv_obj_t* parent, uint8_t screen)
 		obj = ui_create_button(parent, "FN", button_large_width, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_FN);
 		lv_obj_set_pos(obj, x += button_large_width + gap, 100);
 		obj = ui_create_button(parent, "CLR", button_w, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_CLEAR);
-		lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 10, 100);	
+		lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 10, 100);
 		clear_obj = obj;	
 		break;
 	case SCREEN_WIFI:

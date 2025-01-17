@@ -8,6 +8,7 @@
 #include "L_Core/ui/ui-simple.h"
 #include "K_Core/secs/secs.h"
 #include "K_Core/simple/simple.h"
+#include "K_Core/supply/supply.h"
 
 ComBuffer RawRxComBuffer;
 ComBuffer RawRxUrgentComBuffer;
@@ -449,16 +450,23 @@ void communication_check_rx_uart1()
 }
 void communication_check_rx_uart2()
 {
-	switch (systemconfig.serial2.mode) {
-	case SERIAL2_MODE_SIMPLE:
-		ParseIncommingLineToSimpleString(); // Simple parsing
-		break;
-	case SERIAL2_MODE_SECS:
-		ParseIncommingLineToSecsString(); // Secs parsing
-		break;
-	case SERIAL2_MODE_BLE_MODEN:
-		communication_process_rx_serial(&ComUart2);
-		break;
+	if (systemconfig.serial2.is_485)
+	{
+		supply_parse_incomming_line();
+	}
+	else
+	{
+		switch (systemconfig.serial2.mode) {
+		case SERIAL2_MODE_SIMPLE:
+			ParseIncommingLineToSimpleString(); // Simple parsing
+			break;
+		case SERIAL2_MODE_SECS:
+			ParseIncommingLineToSecsString(); // Secs parsing
+			break;
+		case SERIAL2_MODE_BLE_MODEN:
+			communication_process_rx_serial(&ComUart2);
+			break;
+		}	
 	}
 }
 void communication_check_rx_ble()

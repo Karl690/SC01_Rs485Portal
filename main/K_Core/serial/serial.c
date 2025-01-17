@@ -138,12 +138,12 @@ void serial_init()
 	if (systemconfig.serial1.tx_pin != systemconfig.serial2.tx_pin 
 		&& systemconfig.serial1.rx_pin != systemconfig.serial2.rx_pin)
 	{
-		if (systemconfig.serial2.is_485)
-		{
-			
-			serial_uart_init(UART_NUM_2, SERIAL_485_TXD_PIN, SERIAL_485_RXD_PIN, 9600, SERIAL_485_RTS_PIN, SERIAL_UART2_CTS_PIN, true);		
-		}
-		else
+//		if (systemconfig.serial2.is_485)
+//		{
+//			
+//			serial_uart_init(UART_NUM_2, SERIAL_485_TXD_PIN, SERIAL_485_RXD_PIN, 9600, SERIAL_485_RTS_PIN, SERIAL_UART2_CTS_PIN, true);		
+//		}
+//		else
 		{
 			serial_uart_init(UART_NUM_2, systemconfig.serial2.tx_pin, systemconfig.serial2.rx_pin, systemconfig.serial2.baud, SERIAL_UART2_RTS_PIN, SERIAL_UART2_CTS_PIN, false);		
 		}

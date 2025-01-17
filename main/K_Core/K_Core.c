@@ -9,6 +9,7 @@
 #include "serial/serial.h"
 #include "secs/secs.h"
 #include "simple/simple.h"
+#include "supply/supply.h"
 #include "K_Core/amplifier/amplifier.h"
 DisplayVariableInfo *ActiveVariableInfo = NULL;
 void forground_task(void* arg);
@@ -20,6 +21,7 @@ void K_Core_Main()
 	serial_init();
 	secs_init();
 	simple_init();
+	supply_init();
 	amplifier_init();
 	// sps30_init();
 	// InitSerialBuffers();

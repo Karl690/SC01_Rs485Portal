@@ -26,9 +26,9 @@ enum
 typedef struct
 {
 	COMPORT* serial;
-	uint16_t tail;
-	uint16_t head;
-	char que_buffer[SIMPLE_CMD_QUE_SIZE][SIMPLE_CMD_MAX_LEN];
+	uint16_t que_tail;
+	uint16_t que_head;
+	char que_commands[SIMPLE_CMD_QUE_SIZE][SIMPLE_CMD_MAX_LEN];
 }SIMPLE_OBJ;
 
 typedef struct

@@ -69,7 +69,7 @@ void ParseIncommingLineToSimpleString()
 	char WorkRxChar;
 	ComBuffer* SourceBuff = &simple_obj.serial->RxBuffer;
 	COMPORT* WorkingComPort = simple_obj.serial;
-	char* buffer = simple_obj.que_buffer[simple_obj.head];
+	char* command = simple_obj.que_commands[simple_obj.que_head];
 	for (uint16_t i = 0; i < PROCESS_MAX_CHARS_TO_READ_ON_ONE_SLICE; i++)
 	{
 		if (SourceBuff->Head == SourceBuff->Tail) break;
@@ -78,45 +78,40 @@ void ParseIncommingLineToSimpleString()
 		SourceBuff->Tail &= (SourceBuff->Buffer_Size - 1); //circular que with even hex size....
 		if (WorkRxChar  > 0x19 && WorkRxChar <= 0x7F)
 		{
-			buffer[simple_buffer_pos] = WorkRxChar;
+			command[simple_buffer_pos] = WorkRxChar;
 			simple_buffer_pos++;
 		}
-		else if (WorkRxChar == CMD_END_CHAR || simple_buffer_pos + 1 >= SIMPLE_CMD_MAX_LEN)
+		switch (WorkRxChar)
 		{
+		case PING_REPLY:
+			if (!dump_display_sending)
+			{
+				WorkingComPort->TxAcknowledgeCounter--; //keep track of how far behind we are
+			}
+			if (WorkingComPort->TxAcknowledgeCounter < 0) WorkingComPort->TxAcknowledgeCounter = 0; //in case of underrun from reset condition
+			if (WorkingComPort->pingSent)
+			{
+				ui_simple_add_char(PING_REPLY, UI_RECEIVE_COLOR);	
+				WorkingComPort->pingSent = false;
+			}
+			break;
+		case PING_CHAR:
+			WorkingComPort->RxAcknowledgeCounter = 1; // replay 0x6 only at one time.
+			WorkingComPort->TxAcknowledgeCounter = 0;
+			// display_reset_capture_buffer(); // reset capture buffer.
+			// dump_display_sending = false;
+			ui_simple_add_char(PING_CHAR, UI_RECEIVE_COLOR);	
+			ui_simple_add_char(PING_REPLY, UI_SEND_COLOR);		
+			break;
+		case CR_CHAR:
+		case CMD_END_CHAR:
 			if (simple_buffer_pos == 0) break;
-			buffer[simple_buffer_pos] = 0;
+			command[simple_buffer_pos] = 0;
 			//simple_obj.head++;
 			simple_buffer_pos = 0;
-			simple_obj.head = simple_obj.head >= SIMPLE_CMD_QUE_SIZE ? 0 : simple_obj.head + 1; //0xf
+			simple_obj.que_head++;
+			if (simple_obj.que_head >= SIMPLE_CMD_QUE_SIZE) simple_obj.que_head = 0;
 			break;
-		}
-		else
-		{
-			switch (WorkRxChar)
-			{
-			case PING_REPLY:
-				if (!dump_display_sending)
-				{
-					WorkingComPort->TxAcknowledgeCounter--; //keep track of how far behind we are
-				}
-				if (WorkingComPort->TxAcknowledgeCounter < 0) WorkingComPort->TxAcknowledgeCounter = 0; //in case of underrun from reset condition
-				if (WorkingComPort->pingSent)
-				{
-					ui_simple_add_char(PING_REPLY, UI_RECEIVE_COLOR);	
-					WorkingComPort->pingSent = false;
-				}
-				break;
-			case PING_CHAR:
-				WorkingComPort->RxAcknowledgeCounter = 1; // replay 0x6 only at one time.
-				WorkingComPort->TxAcknowledgeCounter = 0;
-				// display_reset_capture_buffer(); // reset capture buffer.
-				// dump_display_sending = false;
-				ui_simple_add_char(PING_CHAR, UI_RECEIVE_COLOR);	
-				ui_simple_add_char(PING_REPLY, UI_SEND_COLOR);		
-				break;
-			case CMD_END_CHAR:
-				break;
-			}	
 		}
 	}
 }
@@ -225,9 +220,10 @@ void simple_send_dump_screen()
 
 void simple_parse_command()
 {
-	if (simple_obj.head == simple_obj.tail) return;
-	char* command = simple_obj.que_buffer[simple_obj.tail];
-	simple_obj.tail = simple_obj.tail >= SIMPLE_CMD_QUE_SIZE ? 0 : simple_obj.tail + 1; //0xf
+	if (simple_obj.que_head == simple_obj.que_tail) return;
+	char* command = simple_obj.que_commands[simple_obj.que_tail];
+	simple_obj.que_tail++;
+	if (simple_obj.que_tail >= SIMPLE_CMD_QUE_SIZE) simple_obj.que_tail = 0; //0xf
 	ui_simple_add_log(command, UI_RECEIVE_COLOR);
 	uint32_t index = 0;
 	char mark = command[0];
