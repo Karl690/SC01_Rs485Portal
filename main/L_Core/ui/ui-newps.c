@@ -18,7 +18,7 @@ void ui_newps_call_event_button(uint8_t code, bool direct)
 	switch (code)
 	{
 	case UI_NEWPS_BTN_PING:
-		SendPing();
+		supply_read_teslaman_status(); //SendPing();
 		break;
 	case UI_NEWPS_BTN_PWROFF:
 		supply_turn_off_voltage();

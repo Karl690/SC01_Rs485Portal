@@ -62,7 +62,7 @@ const PFUNC F1HZ[NUM_1HZ] =
 	Spare,
 	Spare, //sps30_request_read,
 	CheckBluetoothConnection,
-	RequestPowerSupplyStatus, //amplifier_build_status_string,
+	Spare, //RequestPowerSupplyStatus, //amplifier_build_status_string,
 	BlinkHeartBeat,
 };
 /*
@@ -152,5 +152,5 @@ void RS485_test()
 
 void RequestPowerSupplyStatus()
 {
-	supply_read_teslaman_status();
+	//supply_read_teslaman_status();
 }

@@ -54,8 +54,10 @@ void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int baud, int rts_pi
 	uart_set_pin(port, tx_pin, rx_pin, rts_pin, cts_pin);
 	if (is485)
 	{
-		// Set RS485 half duplex mode	
+		// Set RS485 half duplex mode	UART_MODE_RS485_APP_CTRL
+		//ESP_ERROR_CHECK(uart_set_mode(port, UART_MODE_RS485_APP_CTRL));
 		ESP_ERROR_CHECK(uart_set_mode(port, UART_MODE_RS485_HALF_DUPLEX));
+		//ESP_ERROR_CHECK(uart_set_mode(port, UART_MODE_RS485_COLLISION_DETECT));
 	}
 	else
 	{
