@@ -152,5 +152,5 @@ void RS485_test()
 
 void RequestPowerSupplyStatus()
 {
-	//supply_read_teslaman_status();
+ 	supply_read_teslaman_status();
 }

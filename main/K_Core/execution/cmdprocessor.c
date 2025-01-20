@@ -494,6 +494,41 @@ void InvalidateAllCmdArgs(GMCommandStructure *cmdPtr)
 	memset(cmdPtr->Comment, 0, COMMENT_STRING_LENGTH);
 }
 
+//clear first character of each argument and get ready for next char
+void resetGcodeParseBuffer(AsciiArgs* args)
+{
+	//this will reset the ascii input buffers by putting a null in the first character
+	args->GCodeArgComment[0] = 0; //set comment to null as well
+	args->GCodeArgComment[1] = 0; //many routines look past the SOAPSTRING_CHAR location for the comment string.
+	args->GCodeArgA[0] = 0;
+	args->GCodeArgB[0] = 0;
+	args->GCodeArgC[0] = 0;
+	args->GCodeArgD[0] = 0;
+	args->GCodeArgE[0] = 0;
+	args->GCodeArgF[0] = 0;
+	args->GCodeArgG[0] = 0;
+	args->GCodeArgH[0] = 0;
+	args->GCodeArgI[0] = 0;
+	args->GCodeArgJ[0] = 0;
+	args->GCodeArgK[0] = 0;
+	args->GCodeArgL[0] = 0;
+	args->GCodeArgM[0] = 0;
+	args->GCodeArgN[0] = 0;
+	args->GCodeArgO[0] = 0;
+	args->GCodeArgP[0] = 0;
+	args->GCodeArgQ[0] = 0;
+	args->GCodeArgR[0] = 0;
+	args->GCodeArgS[0] = 0;
+	args->GCodeArgT[0] = 0;
+	args->GCodeArgU[0] = 0;
+	args->GCodeArgV[0] = 0;
+	args->GCodeArgW[0] = 0;
+	args->GCodeArgX[0] = 0;
+	args->GCodeArgY[0] = 0;
+	args->GCodeArgZ[0] = 0;
+	args->GCodeArgSplat[0] = 0;
+}
+
 void parseMGCode(char* cmd, int len)
 {
 	if (dump_display_sending || (!dump_display_sending && dump_display_waiting > 0)) return;
@@ -602,6 +637,7 @@ void parseMGCode(char* cmd, int len)
 
 	ARG_N = ++ gcodeLineNumber; //update the gcodelinenumber for error and debug syncronization
 	
+	resetGcodeParseBuffer(&acciiArgs); //clear first character of each argument and get ready for next char
 	// NextCommandInsertionPointer++;
 	// if (NextCommandInsertionPointer >= (SIZE_OF_COMMAND_QUEUE))  NextCommandInsertionPointer = 1;
 	// CommandsInQue++; //increment the commands on the que to do

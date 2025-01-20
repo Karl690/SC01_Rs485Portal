@@ -10,7 +10,7 @@ void M_Code_M640()
 	if (ARG_I_PRESENT)
 	{
 		if (ARG_I == 0) supply_turn_off_voltage();
-		else if (ARG_I == 1) supply_turn_off_voltage();
+		else if (ARG_I == 1) supply_turn_on_voltage();
 		return;
 	}
 	if (ARG_V_PRESENT && ARG_C_PRESENT)

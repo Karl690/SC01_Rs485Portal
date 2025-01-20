@@ -316,8 +316,13 @@ void communication_process_rx_ble(BleDevice* device)
 				}
 				break;
 			case PING_CHAR:     //if (rawChar==7)
-				if (run_mode == RUN_BLE_SERVER)
+				if (run_mode == RUN_BLE_SERVER) {
 					communication_add_char_to_serial_buffer(&MasterCommPort->TxBuffer, PING_REPLY);
+				}
+				if (systemconfig.serial2.is_485)
+				{
+					
+				}
 				break;
 			case ABORT_CHAR:  
 				break;
