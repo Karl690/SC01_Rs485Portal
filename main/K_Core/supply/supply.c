@@ -129,7 +129,7 @@ void supply_turn_off_voltage()
 
 void supply_turn_on_voltage()
 {
-	supply_send_packaget_to_supply(supply_turn_off_voltage_485, sizeof(supply_turn_off_voltage_485));
+	supply_send_packaget_to_supply(supply_turn_on_voltage_485, sizeof(supply_turn_off_voltage_485));
 }
 
 

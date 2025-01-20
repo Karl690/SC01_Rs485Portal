@@ -29,7 +29,7 @@ static const uint8_t spp_adv_data[] = {
 uint8_t raw_scan_rsp_data[BLE_RAW_RSP_DATA_SIZE] = {
 	//SC01_MEG_##
         16, 0x09,   //12 : length
-		'S','C','0','1','_','M', 'E', 'G', '_', '0','0','0','_', '0', '0'
+		'S','C','0','1','_','4', '8', '5', '_', '0','0','0','_', '0', '0'
 };
 
 static uint16_t spp_server_mtu_size = 23;
