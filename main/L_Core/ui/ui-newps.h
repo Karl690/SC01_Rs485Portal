@@ -22,6 +22,7 @@ typedef struct
 	lv_obj_t* checksum;
 	lv_obj_t* slider;
 	lv_obj_t* slider_label;
+	lv_obj_t* emulator;
 } UI_NEWPS_OBJ;
 
 void ui_newps_screen_init(void);

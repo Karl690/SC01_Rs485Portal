@@ -384,65 +384,6 @@ void ui_settings_wifi_page_init()
 	ui_settings.ui_wifi.subnet= obj;
 }
 
-void ui_settings_opc_page_init()
-{
-	ui_settings_opc_page = lv_obj_create(ui_settings_screen);
-	lv_obj_set_size(ui_settings_opc_page, 375, 225); //480-105
-	lv_obj_set_pos(ui_settings_opc_page, 102, 55); 
-	lv_obj_set_style_pad_all(ui_settings_opc_page, 10, LV_PART_MAIN);
-	lv_obj_t* obj = ui_create_label(ui_settings_opc_page, "OPC", &lv_font_montserrat_20);
-	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
-	
-	uint16_t y = 40;
-	obj = ui_create_label(ui_settings_opc_page, "User name: ", &lv_font_montserrat_14);
-	lv_obj_set_pos(obj, 0, y + 10);
-	obj = lv_textarea_create(ui_settings_opc_page);
-	lv_obj_set_style_border_color(obj, lv_color_hex(UI_BACKGROUND_COLOR), LV_PART_MAIN);
-	lv_obj_set_style_border_width(obj, 1, LV_PART_MAIN);
-	lv_textarea_set_one_line(obj, true);
-	lv_obj_set_width(obj, 150);
-	lv_obj_set_pos(obj, 160, y);
-	lv_obj_add_event_cb(obj, ui_event_edit_cb, LV_EVENT_ALL, NULL);
-	lv_obj_set_user_data(obj, systemconfig.opc.username);
-	lv_textarea_set_text(obj, (const char*)systemconfig.opc.username);
-	ui_settings.ui_opc.name = obj;
-	
-	y += SETTINGS_LINE_SPACE;
-	obj = ui_create_label(ui_settings_opc_page, "User password: ", &lv_font_montserrat_14);
-	lv_obj_set_pos(obj, 0, y + 10);
-	obj = lv_textarea_create(ui_settings_opc_page);
-	lv_obj_set_style_border_color(obj, lv_color_hex(UI_BACKGROUND_COLOR), LV_PART_MAIN);
-	lv_obj_set_style_border_width(obj, 1, LV_PART_MAIN);
-	lv_textarea_set_one_line(obj, true);
-	lv_textarea_set_password_mode(obj, true);
-	lv_obj_set_width(obj, 150);
-	lv_obj_set_pos(obj, 160, y);
-	lv_obj_add_event_cb(obj, ui_event_edit_cb, LV_EVENT_ALL, NULL);
-	lv_obj_set_user_data(obj, systemconfig.opc.userpassword);
-	lv_textarea_set_text(obj, (const char*)systemconfig.opc.userpassword);
-	ui_settings.ui_opc.password = obj;
-	
-	y += SETTINGS_LINE_SPACE;
-	obj = ui_create_label(ui_settings_opc_page, "Status: ", &lv_font_montserrat_14);
-	lv_obj_set_pos(obj, 0, y + 10);
-	obj = lv_switch_create(ui_settings_opc_page);
-	lv_obj_set_pos(obj, 160, y);
-	if (systemconfig.opc.status) lv_obj_add_state(obj, LV_STATE_CHECKED);
-	else lv_obj_add_state(obj, LV_STATE_CHECKED);
-	lv_obj_add_event_cb(obj, ui_settings_event_switch_cb, LV_EVENT_VALUE_CHANGED, &systemconfig.opc.status);
-	ui_settings.ui_opc.status = obj;
-	
-	y += SETTINGS_LINE_SPACE;
-	obj = ui_create_label(ui_settings_opc_page, "Autostart: ", &lv_font_montserrat_14);
-	lv_obj_set_pos(obj, 0, y + 10);
-	obj = lv_switch_create(ui_settings_opc_page);
-	lv_obj_set_pos(obj, 160, y);
-	if (systemconfig.opc.autostart) lv_obj_add_state(obj, LV_STATE_CHECKED);
-	else lv_obj_add_state(obj, LV_STATE_CHECKED);
-	lv_obj_add_event_cb(obj, ui_settings_event_switch_cb, LV_EVENT_VALUE_CHANGED, &systemconfig.opc.autostart);
-	ui_settings.ui_opc.autostart = obj;
-}
-
 void ui_settings_serial_485_visible(bool enable)
 {
 	if (enable)
@@ -776,8 +717,6 @@ void ui_settings_screen_init()
 	settings_active_page = ui_settings_bluetooth_page;
 	ui_settings_wifi_page_init();
 	lv_obj_add_flag(ui_settings_wifi_page, LV_OBJ_FLAG_HIDDEN);
-	ui_settings_opc_page_init();
-	lv_obj_add_flag(ui_settings_opc_page, LV_OBJ_FLAG_HIDDEN);
 	ui_settings_serial_page_init(0);
 	lv_obj_add_flag(ui_settings_serial_page1, LV_OBJ_FLAG_HIDDEN);
 	ui_settings_serial_page_init(1);
@@ -814,13 +753,4 @@ void ui_settings_update_configuratiion()
 	lv_textarea_set_text(ui_settings.ui_wifi.password, (const char*)systemconfig.wifi.password);	
 	lv_label_set_text(ui_settings.ui_wifi.ip, (const char*)systemconfig.wifi.ip);
 	lv_label_set_text(ui_settings.ui_wifi.subnet, (const char*)systemconfig.wifi.subnet);
-
-	
-	if (systemconfig.opc.autostart)	lv_obj_add_state(ui_settings.ui_opc.autostart, LV_STATE_CHECKED);
-	else lv_obj_clear_state(ui_settings.ui_opc.autostart, LV_STATE_CHECKED);
-	if (systemconfig.opc.status)	lv_obj_add_state(ui_settings.ui_opc.status, LV_STATE_CHECKED);
-	else lv_obj_clear_state(ui_settings.ui_opc.status, LV_STATE_CHECKED);
-	lv_textarea_set_text(ui_settings.ui_opc.name, (const char*)systemconfig.opc.username);
-	lv_textarea_set_text(ui_settings.ui_opc.password, (const char*)systemconfig.opc.userpassword);
-	
 }

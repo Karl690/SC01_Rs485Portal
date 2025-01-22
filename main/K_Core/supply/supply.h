@@ -9,13 +9,16 @@
 #define SUPPLY_CMD_QUE_SIZE 0xf
 #define SUPPLY_CMD_MAX_LEN 40
 
+#define SUPPLY_CMD_SEND_QUE_SIZE 20
+
 typedef struct
 {
-	uint8_t high_voltage_onoff;
+	uint8_t computer_control_onoff;
 	uint32_t prog_voltage;
 	uint32_t prog_current;
 	uint32_t actual_voltage;
 	uint32_t actual_current;
+	uint8_t turn_onoff_voltage;
 }SUPPLY_STATUS_INFO;
 typedef struct
 {
@@ -26,8 +29,14 @@ typedef struct
 	uint8_t waitingOfResponsive;
 }SUPPLY_OBJ;
 
+typedef struct
+{
+	char cmd[20];
+	uint8_t len;
+}SUPPLY_CMD;
 extern SUPPLY_STATUS_INFO supply_status_info;
 extern uint16_t supply_checksum;
+extern bool supply_is_emulator;
 uint16_t supply_modbus_checksum(uint8_t* buf, size_t len);
 
 void supply_send_packaget_to_supply(uint8_t* buf, size_t len);
@@ -46,4 +55,6 @@ void supply_turn_on_voltage();
 
 void supply_init();
 void supply_parse_incomming_line();
-void supply_process_command_sequence();
+void supply_process_incomming_command_sequence();
+void supply_check_or_incomming_command();
+void supply_send_command();

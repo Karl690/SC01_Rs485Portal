@@ -32,14 +32,6 @@ typedef struct
 
 typedef struct
 {
-	lv_obj_t* status;
-	lv_obj_t* autostart;
-	lv_obj_t* name;
-	lv_obj_t* password;	
-} UI_OPC;
-
-typedef struct
-{
 	lv_obj_t* ui_rx_pin;
 	lv_obj_t* ui_tx_pin;
 	lv_obj_t* ui_baud;
@@ -60,7 +52,6 @@ typedef struct
 {
 	UI_WIFI ui_wifi;
 	UI_BLUETOOTH ui_bluetooth;
-	UI_OPC ui_opc;
 	UI_SERIAL ui_serial1;
 	UI_SERIAL ui_serial2;
 	UI_SECS ui_secs;

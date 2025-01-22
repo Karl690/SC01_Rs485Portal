@@ -49,19 +49,6 @@ void ui_newps_event_button_cb(lv_event_t* e)
 }
 
 
-void ui_newps_update_indicator_timer(lv_timer_t * timer)
-{
-	sprintf(ui_temp_string, "%d", supply_status_info.prog_voltage / 1000);
-	lv_label_set_text(ui_newps_obj.slider_label, ui_temp_string);
-	sprintf(ui_temp_string, "PRG V=%.02fkV", supply_status_info.prog_voltage / 1000.0);
-	lv_label_set_text(ui_newps_obj.prg, ui_temp_string);
-	
-	sprintf(ui_temp_string, "ACT V=%.02fkV", supply_status_info.actual_voltage / 1000.0);
-	lv_label_set_text(ui_newps_obj.act, ui_temp_string);
-	
-	sprintf(ui_temp_string, "CKSUM=%X", supply_checksum);
-	lv_label_set_text(ui_newps_obj.checksum, ui_temp_string);
-}
 
 
 void ui_newps_change_slide_value(int value)
@@ -98,7 +85,43 @@ void ui_newps_slider_btn_cb(lv_event_t* e)
 	}
 }
 
+void ui_newps_switch_event_cb(lv_event_t* e) 
+{
+	lv_obj_t* obj = lv_event_get_target(e);
+	bool status = lv_obj_has_state(obj, LV_STATE_CHECKED);
+	if (obj == ui_newps_obj.emulator)
+	{
+		supply_is_emulator = status;
+	}
+}
 
+void ui_newps_update_timer(lv_timer_t *t)
+{
+	if (!lv_obj_is_visible(ui_newps_screen)) return;
+	if (supply_status_info.computer_control_onoff)
+	{
+		ui_change_button_color(ui_newps_obj.pwron, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
+		ui_change_button_color(ui_newps_obj.pwroff, UI_BUTTON_NORMAL_BG_COLOR, UI_BUTTON_NORMAL_FG_COLOR);
+	}
+	else
+	{
+		ui_change_button_color(ui_newps_obj.pwroff, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
+		ui_change_button_color(ui_newps_obj.pwron, UI_BUTTON_NORMAL_BG_COLOR, UI_BUTTON_NORMAL_FG_COLOR);
+	}
+	sprintf(ui_temp_string, "%d", supply_status_info.prog_voltage / 1000);
+	lv_label_set_text(ui_newps_obj.slider_label, ui_temp_string);
+	sprintf(ui_temp_string, "PRG V=%.02fkV", supply_status_info.prog_voltage / 1000.0);
+	lv_label_set_text(ui_newps_obj.prg, ui_temp_string);
+	
+	lv_slider_set_value(ui_newps_obj.slider, supply_status_info.prog_voltage / 1000, LV_ANIM_ON);
+	
+	sprintf(ui_temp_string, "ACT V=%.02fkV", (float)(supply_status_info.actual_voltage / 1000.0));
+	lv_label_set_text(ui_newps_obj.act, ui_temp_string);
+	
+	sprintf(ui_temp_string, "CKSUM=%X", supply_checksum);
+	lv_label_set_text(ui_newps_obj.checksum, ui_temp_string);
+	lv_refr_now(NULL);
+}
 void ui_newps_screen_init(void)
 {	
 	const lv_font_t* font = &lv_font_montserrat_16;
@@ -162,6 +185,13 @@ void ui_newps_screen_init(void)
 	ui_newps_obj.checksum = obj;
 	lv_obj_set_pos(obj, x+220, y-25);
 	
+	obj = ui_create_label(ui_newps_screen, "EMULATOR", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, x + 170, y );
+	obj = lv_switch_create(ui_newps_screen);
+	ui_newps_obj.emulator = obj;
+	lv_obj_add_event_cb(obj, ui_newps_switch_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+	lv_obj_set_pos(obj, x + 260, y-8);
+	
 	obj = lv_obj_create(ui_newps_screen);
 	lv_obj_set_size(obj, SCREEN_WIDTH - button_large_width - gap * 3 - 50, SCREEN_HEIGHT - 120);
 	lv_obj_set_pos(obj, x, (button_h + gap) * 2 + gap); 
@@ -179,7 +209,6 @@ void ui_newps_screen_init(void)
 		lv_obj_set_x(obj, 5); 
 		lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
 	}
-	lv_timer_create(ui_newps_update_indicator_timer, 500, NULL);
 	
 	x = SCREEN_WIDTH - gap - 40;
 	y = 50 + gap;
@@ -201,6 +230,8 @@ void ui_newps_screen_init(void)
 	y += 130 + gap;
 	obj = ui_create_button(ui_newps_screen, "-", 40, 40, 2, &lv_font_montserrat_24, ui_newps_slider_btn_cb, (void*)1);
 	lv_obj_set_pos(obj, x, y);
+	
+	lv_timer_create(ui_newps_update_timer, 1000, NULL);
 }
 
 char ui_newps_temp_string1[1024] = { 0 };

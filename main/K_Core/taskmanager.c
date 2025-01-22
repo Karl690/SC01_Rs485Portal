@@ -36,8 +36,8 @@ const PFUNC F100HZ[NUM_100HZ] =
 	adc_get_process_rawdata,
 	simple_parse_command, //serial_uart_check_rxtx, //Spare,
 	simple_send_dump_screen, //serial_rs485_check_rxtx, //Spare,
-	supply_process_command_sequence,
-	Spare,
+	supply_process_incomming_command_sequence,
+	supply_send_command,
 	Spare,
 	Spare,
 };
@@ -62,7 +62,7 @@ const PFUNC F1HZ[NUM_1HZ] =
 	Spare,
 	Spare, //sps30_request_read,
 	CheckBluetoothConnection,
-	Spare, //RequestPowerSupplyStatus, //amplifier_build_status_string,
+	RequestPowerSupplyStatus, //amplifier_build_status_string,
 	BlinkHeartBeat,
 };
 /*
@@ -152,5 +152,9 @@ void RS485_test()
 
 void RequestPowerSupplyStatus()
 {
- 	supply_read_teslaman_status();
+	if (!supply_is_emulator)
+	{
+		// send the request status command every 1s.
+		supply_read_teslaman_status();	
+	}
 }

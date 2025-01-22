@@ -11,6 +11,7 @@
 #include "K_Core/amplifier/amplifier.h"
 #include "K_Core/secs/secs.h"
 #include "M_Codes.h"
+#include "K_Core/supply/supply.h"
 
 uint32_t gcodeLineNumber = 0;
 uint32_t cmd_NextCommandInsertionPointer = 1;
@@ -40,6 +41,7 @@ uint32_t CommandsInUrgentQue = 0;
 
 void cmd_sequener()
 {
+	supply_check_or_incomming_command(); // check the incomming msg on Supply 
     if(!cmd_CommandsInQue) return;						//no commands to proces, so return
     char* cmd = &cmd_CommandsInQueBuffer[cmd_CurrentPointer][0];
 	int len = strlen(cmd);
