@@ -1,8 +1,8 @@
 #pragma  once
 #include "main.h"
 #include "K_Core/serial/serial.h"
-#define SUPPLY_MAX_VOLTAGE		30000
-#define SUPPLY_MAX_KVOLTAGE		30
+#define SUPPLY_MAX_VOLTAGE		10000
+#define SUPPLY_MAX_KVOLTAGE		20
 #define SUPPLY_MIN_VOLTAGE		0
 #define SUPPLY_MIN_KVOLTAGE		0
 

@@ -18,13 +18,16 @@ void ui_newps_call_event_button(uint8_t code, bool direct)
 	switch (code)
 	{
 	case UI_NEWPS_BTN_PING:
-		supply_read_teslaman_status(); //SendPing();
+		supply_turn_off_voltage();
+		//supply_read_teslaman_status(); //SendPing();
 		break;
 	case UI_NEWPS_BTN_PWROFF:
-		supply_turn_off_voltage();
+		supply_turn_on_voltage();
+		//supply_turn_off_voltage();
 		break;
 	case UI_NEWPS_BTN_PWRON:
-		supply_turn_on_voltage();
+		supply_computer_control_on();
+		//supply_turn_on_voltage();
 		break;
 	case UI_NEWPS_BTN_INC_200:
 		if (supply_status_info.prog_voltage + 200 <= SUPPLY_MAX_VOLTAGE) {
@@ -60,7 +63,8 @@ void ui_newps_slider_event_cb(lv_event_t * e)
 {
 	lv_obj_t * slider = lv_event_get_target(e);
 	int value = (int)lv_slider_get_value(slider);
-	ui_newps_change_slide_value(value * 1000);
+	if (value > 20)value = 20; //do not go above 10kv for now
+	ui_newps_change_slide_value(value * 166);
 }
 void ui_newps_slider_btn_cb(lv_event_t* e)
 {
@@ -71,15 +75,17 @@ void ui_newps_slider_btn_cb(lv_event_t* e)
 	case 0:
 		if (value + 1 <= SUPPLY_MAX_VOLTAGE / 1000) {
 			value+=1;
+			if (value > 20)value = 20;//do not go above 10kv for now
 			lv_slider_set_value(ui_newps_obj.slider, value, LV_ANIM_ON);
-			ui_newps_change_slide_value(value * 1000);
+			ui_newps_change_slide_value(value * 166);
 		}
 		break;
 	case 1:
 		if (value - 1 >= 0) {
 			value-=1;
+			if (value > 20)value = 20; //do not go above 10kv for now
 			lv_slider_set_value(ui_newps_obj.slider, value, LV_ANIM_ON);
-			ui_newps_change_slide_value(value * 1000);
+			ui_newps_change_slide_value(value * 166);
 		}
 		break;
 	}
@@ -113,7 +119,7 @@ void ui_newps_update_timer(lv_timer_t *t)
 	sprintf(ui_temp_string, "PRG V=%.02fkV", supply_status_info.prog_voltage / 1000.0);
 	lv_label_set_text(ui_newps_obj.prg, ui_temp_string);
 	
-	lv_slider_set_value(ui_newps_obj.slider, supply_status_info.prog_voltage / 1000, LV_ANIM_ON);
+	lv_slider_set_value(ui_newps_obj.slider, supply_status_info.prog_voltage / 500, LV_ANIM_ON);
 	
 	sprintf(ui_temp_string, "ACT V=%.02fkV", (float)(supply_status_info.actual_voltage / 1000.0));
 	lv_label_set_text(ui_newps_obj.act, ui_temp_string);
@@ -140,18 +146,18 @@ void ui_newps_screen_init(void)
 	
 	gap = 5;
 	x = 10, y = 50 + gap;
-	obj = ui_create_button(ui_newps_screen, "PING", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_PING);
+	obj = ui_create_button(ui_newps_screen, "PWR OFF", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_PING);
 	ui_newps_obj.ping = obj;
 	lv_obj_set_pos(obj, x, y);
 	
 	y += button_h + gap;
-	obj = ui_create_button(ui_newps_screen, "PWR ON", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_PWRON);
+	obj = ui_create_button(ui_newps_screen, "Cntrl ON", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_PWRON);
 	// ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	ui_newps_obj.pwron= obj;
 	lv_obj_set_pos(obj, x, y);
 	
 	y += button_h + gap;
-	obj = ui_create_button(ui_newps_screen, "PWR OFF", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_PWROFF);
+	obj = ui_create_button(ui_newps_screen, "PWR ON", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_PWROFF);
 	// ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	ui_newps_obj.pwroff = obj;
 	lv_obj_set_pos(obj, x, y);

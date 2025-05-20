@@ -196,6 +196,7 @@ void supply_turn_on_voltage()
 		supply_status_info.turn_onoff_voltage = true;
 	}
 	else {
+		//supply_send_packaget_to_supply(supply_computer_control_on_485, sizeof(supply_computer_control_on_485));
 		supply_send_packaget_to_supply(supply_turn_on_voltage_485, sizeof(supply_turn_off_voltage_485));
 	}
 }
