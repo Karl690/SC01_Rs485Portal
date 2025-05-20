@@ -2,9 +2,10 @@
 #include "main.h"
 #include "K_Core/serial/serial.h"
 #define SUPPLY_MAX_VOLTAGE		10000
-#define SUPPLY_MAX_KVOLTAGE		20
+#define SUPPLY_MAX_KVOLTAGE		10
 #define SUPPLY_MIN_VOLTAGE		0
 #define SUPPLY_MIN_KVOLTAGE		0
+#define SUPPLY_STEP_VOLTAGE		200
 
 #define SUPPLY_CMD_QUE_SIZE 0xf
 #define SUPPLY_CMD_MAX_LEN 40

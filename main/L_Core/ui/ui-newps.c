@@ -29,18 +29,13 @@ void ui_newps_call_event_button(uint8_t code, bool direct)
 		supply_computer_control_on();
 		//supply_turn_on_voltage();
 		break;
-	case UI_NEWPS_BTN_INC_200:
-		if (supply_status_info.prog_voltage + 200 <= SUPPLY_MAX_VOLTAGE) {
-			supply_status_info.prog_voltage += 200;
-			supply_set_teslaman_voltage_current(supply_status_info.prog_voltage + 200, 1);
-		}
+	case UI_NEWPS_BTN_SET_5K:
+		lv_slider_set_value(ui_newps_obj.slider, 5000, LV_ANIM_OFF);
+		ui_newps_change_slide_value(5000);
 		break;
-	case UI_NEWPS_BTN_DEC_200:
-		if (supply_status_info.prog_voltage - 200 >= SUPPLY_MIN_VOLTAGE)
-		{
-			supply_status_info.prog_voltage -= 200;
-			supply_set_teslaman_voltage_current(supply_status_info.prog_voltage, 1);
-		}
+	case UI_NEWPS_BTN_SET_7_5K:
+		lv_slider_set_value(ui_newps_obj.slider, 7500, LV_ANIM_OFF);
+		ui_newps_change_slide_value(7500);
 		break;
 	}
 }
@@ -63,8 +58,8 @@ void ui_newps_slider_event_cb(lv_event_t * e)
 {
 	lv_obj_t * slider = lv_event_get_target(e);
 	int value = (int)lv_slider_get_value(slider);
-	if (value > 20)value = 20; //do not go above 10kv for now
-	ui_newps_change_slide_value(value * 166);
+	// if (value > 20)value = 20; //do not go above 10kv for now
+	ui_newps_change_slide_value(value);
 }
 void ui_newps_slider_btn_cb(lv_event_t* e)
 {
@@ -73,19 +68,29 @@ void ui_newps_slider_btn_cb(lv_event_t* e)
 	switch (code)
 	{
 	case 0:
-		if (value + 1 <= SUPPLY_MAX_VOLTAGE / 1000) {
-			value+=1;
-			if (value > 20)value = 20;//do not go above 10kv for now
-			lv_slider_set_value(ui_newps_obj.slider, value, LV_ANIM_ON);
-			ui_newps_change_slide_value(value * 166);
+		if (value + SUPPLY_STEP_VOLTAGE <= SUPPLY_MAX_VOLTAGE) {
+			value += SUPPLY_STEP_VOLTAGE;
+		}
+		else {
+			value = SUPPLY_MAX_VOLTAGE;
+		}
+		if (supply_status_info.prog_voltage != value)
+		{
+			lv_slider_set_value(ui_newps_obj.slider, value, LV_ANIM_OFF);
+			ui_newps_change_slide_value(value);	
 		}
 		break;
 	case 1:
-		if (value - 1 >= 0) {
-			value-=1;
-			if (value > 20)value = 20; //do not go above 10kv for now
-			lv_slider_set_value(ui_newps_obj.slider, value, LV_ANIM_ON);
-			ui_newps_change_slide_value(value * 166);
+		if (value - SUPPLY_STEP_VOLTAGE >= 0) {
+			value -= SUPPLY_STEP_VOLTAGE;			
+		}
+		else {
+			value = SUPPLY_MIN_VOLTAGE;
+		}
+		if (supply_status_info.prog_voltage != value)
+		{
+			lv_slider_set_value(ui_newps_obj.slider, value, LV_ANIM_OFF);
+			ui_newps_change_slide_value(value);	
 		}
 		break;
 	}
@@ -114,12 +119,12 @@ void ui_newps_update_timer(lv_timer_t *t)
 		ui_change_button_color(ui_newps_obj.pwroff, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
 		ui_change_button_color(ui_newps_obj.pwron, UI_BUTTON_NORMAL_BG_COLOR, UI_BUTTON_NORMAL_FG_COLOR);
 	}
-	sprintf(ui_temp_string, "%d", supply_status_info.prog_voltage / 1000);
+	sprintf(ui_temp_string, "%.01f", supply_status_info.prog_voltage / 1000.0);
 	lv_label_set_text(ui_newps_obj.slider_label, ui_temp_string);
 	sprintf(ui_temp_string, "PRG V=%.02fkV", supply_status_info.prog_voltage / 1000.0);
 	lv_label_set_text(ui_newps_obj.prg, ui_temp_string);
 	
-	lv_slider_set_value(ui_newps_obj.slider, supply_status_info.prog_voltage / 500, LV_ANIM_ON);
+	// lv_slider_set_value(ui_newps_obj.slider, supply_status_info.prog_voltage / 500, LV_ANIM_OFF);
 	
 	sprintf(ui_temp_string, "ACT V=%.02fkV", (float)(supply_status_info.actual_voltage / 1000.0));
 	lv_label_set_text(ui_newps_obj.act, ui_temp_string);
@@ -163,13 +168,13 @@ void ui_newps_screen_init(void)
 	lv_obj_set_pos(obj, x, y);
 	
 	y += button_h + gap;
-	obj = ui_create_button(ui_newps_screen, "V+=200", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_INC_200);
+	obj = ui_create_button(ui_newps_screen, "Set 5Kv", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_SET_5K);
 	// ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	ui_newps_obj.v_plus200 = obj;
 	lv_obj_set_pos(obj, x, y);
 	
 	y += button_h + gap;
-	obj = ui_create_button(ui_newps_screen, "V-=200", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_DEC_200);
+	obj = ui_create_button(ui_newps_screen, "Set 7.5Kv", button_large_width, button_h, 2, font, ui_newps_event_button_cb, (void*)UI_NEWPS_BTN_SET_7_5K);
 	// ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	ui_newps_obj.v_minus200 = obj;
 	lv_obj_set_pos(obj, x, y);
@@ -218,7 +223,7 @@ void ui_newps_screen_init(void)
 	
 	x = SCREEN_WIDTH - gap - 40;
 	y = 50 + gap;
-	obj = ui_create_label(ui_newps_screen, "18", &lv_font_montserrat_16);
+	obj = ui_create_label(ui_newps_screen, "0", &lv_font_montserrat_16);
 	lv_obj_set_pos(obj, x+10, y);
 	ui_newps_obj.slider_label = obj;
 	y += 25;
@@ -228,7 +233,7 @@ void ui_newps_screen_init(void)
 	obj = lv_slider_create(ui_newps_screen);
 	lv_obj_set_size(obj, 10, 120);
 	lv_obj_set_pos(obj, x+15, y);
-	lv_slider_set_range(obj, SUPPLY_MIN_KVOLTAGE, SUPPLY_MAX_KVOLTAGE);
+	lv_slider_set_range(obj, SUPPLY_MIN_VOLTAGE, SUPPLY_MAX_VOLTAGE);
 	lv_slider_set_value(obj, 0, LV_ANIM_ON);
 	lv_obj_add_event_cb(obj, ui_newps_slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 	ui_newps_obj.slider = obj;
