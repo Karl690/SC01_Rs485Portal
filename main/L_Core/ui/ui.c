@@ -535,7 +535,7 @@ void InitUI( void )
 	vTaskDelay(pdMS_TO_TICKS(2000));
 	//lv_scr_load(ui_variables_screen);
 	//lv_scr_load_anim(ui_home_screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, false);
-	ui_transform_screen(SCREEN_MEG);
+	ui_transform_screen(SCREEN_NEWPS);
 
 	lv_timer_create(ui_update_timer, 200, NULL);
 }
