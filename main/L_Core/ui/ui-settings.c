@@ -5,6 +5,7 @@
 #include "L_Core/bluetooth/ble.h"
 #include "K_Core/serial/serial.h"
 #include "K_Core/communication/communication.h"
+#include "K_Core/adc/adc.h"
 #include "RevisionHistory.h"
 lv_obj_t* ui_settings_screen;
 lv_obj_t* ui_settings_bluetooth_page;
@@ -210,6 +211,12 @@ void ui_settings_reboot_timer_cb(lv_timer_t * timer)
 	esp_restart();
 }
 
+void ui_settings_update_timer_cb(lv_timer_t* timer)
+{
+	sprintf(ui_temp_string, "%d/%.2f", ADC_Channel[0].adcAvg, ADC_Channel[0].convAvg);
+	lv_label_set_text(ui_settings.ui_bluetooth.adc, ui_temp_string);
+}
+
 void ui_settings_event_save_cb(lv_event_t* e)
 {
 	IsInitialized = 0;
@@ -303,6 +310,11 @@ void ui_settings_bluetooth_page_init()
 	else lv_obj_clear_state(obj, LV_STATE_CHECKED);
 	lv_obj_add_event_cb(obj, ui_settings_event_switch_cb, LV_EVENT_VALUE_CHANGED, &systemconfig.ScreenControlEnabled);
 	ui_settings.ui_bluetooth.screen_control = obj;
+	
+	y += SETTINGS_LINE_SPACE;
+	obj = ui_create_label(ui_settings_bluetooth_page, "ADC avg/conv: ", &lv_font_montserrat_14); lv_obj_set_pos(obj, 0, y + 10);
+	obj = ui_create_label(ui_settings_bluetooth_page, "####", &lv_font_montserrat_14); lv_obj_set_pos(obj, 160, y);
+	ui_settings.ui_bluetooth.adc = obj;
 }
 
 void ui_settings_wifi_page_init()
@@ -734,7 +746,7 @@ void ui_settings_screen_init()
 	
 	ui_settings_update_configuratiion();
 	ui_settings_serial_485_visible(systemconfig.serial2.is_485);
-	
+	lv_timer_create(ui_settings_update_timer_cb, 500, NULL);
 	ui_settings_initialized = true;
 }
 

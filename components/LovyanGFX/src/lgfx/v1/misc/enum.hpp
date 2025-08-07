@@ -41,7 +41,7 @@ namespace lgfx
 
   namespace epd_mode
   {
-    enum epd_mode_t
+    enum epd_mode_t : uint8_t
     {
       epd_quality = 1,
       epd_text    = 2,
@@ -111,6 +111,22 @@ namespace lgfx
     static constexpr int TFT_VIOLET      = 0x915C;      /* 180,  46, 226 */
     static constexpr int TFT_TRANSPARENT = 0x0120;
   }
+
+//----------------------------------------------------------------------------
+
+  namespace gradient_fill_styles
+  {
+    enum fill_style_t
+    {
+      horizontal_linear = 0,
+      vertical_linear   = 1,
+      radial_center     = 2
+    };
+    static constexpr const fill_style_t HLINEAR = fill_style_t::horizontal_linear;
+    static constexpr const fill_style_t VLINEAR = fill_style_t::vertical_linear;
+    static constexpr const fill_style_t RADIAL  = fill_style_t::radial_center;
+  }
+  using namespace gradient_fill_styles;
 
 //----------------------------------------------------------------------------
 

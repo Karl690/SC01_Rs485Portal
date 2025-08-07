@@ -225,7 +225,7 @@ void ui_plot_axis(lv_obj_t* parent, bool is_label)
 	label_dsc.color = lv_color_hex(0xFFFFFFF);
 	label_dsc.opa = 90;
 	label_dsc.font = &lv_font_montserrat_16;
-	static char lbl[15] = { 0 };	
+	static char lbl[20] = { 0 };	
 	lv_point_t pos, val;
 	lv_point_t lines[4];
 	lines[0].x = 0; lines[0].y = 0;
@@ -241,7 +241,7 @@ void ui_plot_axis(lv_obj_t* parent, bool is_label)
 		pos = ui_plot_val2pos(val);
 		if (is_label)
 		{
-			sprintf(lbl, "#FFFFFFF %d", i);	
+			sprintf(lbl, "#FFFFFF %d", i);
 			obj = ui_create_label(parent, lbl, font);	
 			lv_obj_set_pos(obj, pos.x + 20, ui_plot_height + 2);
 		}
@@ -255,7 +255,7 @@ void ui_plot_axis(lv_obj_t* parent, bool is_label)
 	{
 		val.x = 0; val.y = i;
 		pos = ui_plot_val2pos(val);
-		sprintf(lbl, "#FFFFFFF %d", i);	
+		sprintf(lbl, "#FFFFFF %d", i);	
 			
 		if (is_label)
 		{

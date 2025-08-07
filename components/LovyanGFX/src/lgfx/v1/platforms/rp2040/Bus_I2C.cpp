@@ -15,7 +15,7 @@ Contributors:
  [mongonta0716](https://github.com/mongonta0716)
  [tobozo](https://github.com/tobozo)
 /----------------------------------------------------------------------------*/
-#if defined (ARDUINO_ARCH_MBED_RP2040) || defined(ARDUINO_ARCH_RP2040)
+#if defined (ARDUINO_ARCH_MBED_RP2040) || defined(ARDUINO_ARCH_RP2040) || defined(USE_PICO_SDK)
 
 #include "Bus_I2C.hpp"
 #include "../../misc/pixelcopy.hpp"
@@ -210,10 +210,10 @@ namespace lgfx
     return res;
   }
 
-  bool Bus_I2C::readBytes(uint8_t* dst, uint32_t length, bool use_dma)
+  bool Bus_I2C::readBytes(uint8_t* dst, uint32_t length, bool use_dma, bool last_nack)
   {
     beginRead();
-    return i2c::readBytes(_cfg.i2c_port, dst, length).has_value();
+    return i2c::readBytes(_cfg.i2c_port, dst, length, last_nack).has_value();
   }
 
   void Bus_I2C::readPixels(void* dst, pixelcopy_t* param, uint32_t length)

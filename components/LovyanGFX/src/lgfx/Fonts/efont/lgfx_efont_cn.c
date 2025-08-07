@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "lgfx_efont_cn.h"
 #if defined ( ARDUINO ) && !defined ( PROGMEM )
  #if __has_include(<pgmspace.h>)
   #include <pgmspace.h>

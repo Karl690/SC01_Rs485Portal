@@ -41,7 +41,7 @@ Contributors:
 
 #include "spresense/common.hpp"
 
-#elif defined (ARDUINO_ARCH_MBED_RP2040) || defined(ARDUINO_ARCH_RP2040)
+#elif defined (ARDUINO_ARCH_MBED_RP2040) || defined(ARDUINO_ARCH_RP2040) || defined(USE_PICO_SDK)
 
 #include "rp2040/common.hpp"
 
@@ -49,15 +49,15 @@ Contributors:
 
 #include "arduino_default/common.hpp"
 
-#elif __has_include(<opencv2/opencv.hpp>)
-
-#include "opencv/common.hpp"
-
-#elif __has_include(<SDL2/SDL.h>) || __has_include(<SDL.h>)
+#elif (__has_include(<SDL2/SDL.h>) || __has_include(<SDL.h>)) && !defined(LGFX_LINUX_FB)
 
 #include "sdl/common.hpp"
 
-#elif defined (__linux__)
+#elif __has_include(<opencv2/opencv.hpp>) && !defined(LGFX_LINUX_FB)
+
+#include "opencv/common.hpp"
+
+#elif defined (__linux__) && defined(LGFX_LINUX_FB)
 
 #include "framebuffer/common.hpp"
 
@@ -177,7 +177,7 @@ namespace lgfx
     cpp::result<void, error_t> beginTransaction(int i2c_port, int i2c_addr, uint32_t freq, bool read = false);
     cpp::result<void, error_t> endTransaction(int i2c_port);
     cpp::result<void, error_t> writeBytes(int i2c_port, const uint8_t *data, size_t length);
-    cpp::result<void, error_t> readBytes(int i2c_port, uint8_t *data, size_t length);
+    cpp::result<void, error_t> readBytes(int i2c_port, uint8_t *data, size_t length, bool last_nack = false);
 
 //--------
 

@@ -15,13 +15,14 @@ Contributors:
  [mongonta0716](https://github.com/mongonta0716)
  [tobozo](https://github.com/tobozo)
 /----------------------------------------------------------------------------*/
-#if defined (ARDUINO_ARCH_MBED_RP2040) || defined(ARDUINO_ARCH_RP2040)
+#if defined (ARDUINO_ARCH_MBED_RP2040) || defined(ARDUINO_ARCH_RP2040) || defined(USE_PICO_SDK)
 
 #include "Light_PWM.hpp"
 
 #include <hardware/pwm.h>
 #include <hardware/spi.h>
 #include <hardware/gpio.h>
+#if __has_include(<pico/stdio.h>)
 #include <pico/stdio.h>
 
 namespace lgfx
@@ -59,5 +60,5 @@ namespace lgfx
 //----------------------------------------------------------------------------
  }
 }
-
+#endif 
 #endif

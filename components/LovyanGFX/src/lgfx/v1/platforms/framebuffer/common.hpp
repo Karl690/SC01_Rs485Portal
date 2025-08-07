@@ -45,10 +45,11 @@ namespace lgfx
   static inline void* heap_alloc_psram(size_t length) { return malloc(length); }
   static inline void* heap_alloc_dma(  size_t length) { return malloc(length); } // aligned_alloc(16, length);
   static inline void heap_free(void* buf) { free(buf); }
+  static inline bool heap_capable_dma(const void* ptr) { return false; }
 
-  static inline void gpio_hi(uint32_t pin) { }
-  static inline void gpio_lo(uint32_t pin) { }
-  static inline bool gpio_in(uint32_t pin) { return false; }
+  void gpio_hi(uint32_t pin);
+  void gpio_lo(uint32_t pin);
+  bool gpio_in(uint32_t pin);
 
   enum pin_mode_t
   { output
@@ -57,8 +58,8 @@ namespace lgfx
   , input_pulldown
   };
 
-  static void pinMode(int_fast16_t pin, pin_mode_t mode) {}
-  static void lgfxPinMode(int_fast16_t pin, pin_mode_t mode) {}
+  void pinMode(int_fast16_t pin, pin_mode_t mode);
+  void lgfxPinMode(int_fast16_t pin, pin_mode_t mode);
 
 //----------------------------------------------------------------------------
 

@@ -35,7 +35,7 @@ bool serial_valid_pins(uint8_t pin)
 	if ((pin >= 10 && pin <= 14) || pin == 21 || pin == SERIAL_485_TXD_PIN || pin == SERIAL_485_RXD_PIN) return true;
 	return false;
 }
-void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int baud, int rts_pin, int cts_pin, bool is485)
+void serial_uart_init(uart_port_t port, int tx_pin, int rx_pin, int baud, int rts_pin, int cts_pin, bool is485)
 {
 	if (!serial_valid_pins(tx_pin)) return;
 	if (!serial_valid_pins(rx_pin)) return;
@@ -68,7 +68,7 @@ void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int baud, int rts_pi
 }
 
 
-void serial_uart_update_config(uint8_t port, int tx_pin, int rx_pin, int baud)
+void serial_uart_update_config(uart_port_t port, int tx_pin, int rx_pin, int baud)
 {
 	const uart_config_t uart_config = {
 		.baud_rate = baud,
@@ -83,7 +83,7 @@ void serial_uart_update_config(uint8_t port, int tx_pin, int rx_pin, int baud)
 }
 bool serial_uart_write_byte(COMPORT* comport, char byte)
 {
-	if (uart_write_bytes(comport->uart_id, &byte, 1) != 1) {
+	if (uart_write_bytes((uart_port_t)comport->uart_id, &byte, 1) != 1) {
 		ESP_LOGE(TAG, "Send data critical failure.");
 		// add your code to handle sending failure here
 		return false;

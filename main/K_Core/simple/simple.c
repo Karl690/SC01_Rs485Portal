@@ -187,7 +187,7 @@ void simple_send_dump_screen()
 		if (dump_display_waiting > 1) dump_display_waiting--;
 		else if(dump_display_waiting == 1)
 		{
-			uart_write_bytes(ComUart2.uart_id, "DC\n", 3);	//Complete = C
+			uart_write_bytes((uart_port_t)ComUart2.uart_id, "DC\n", 3);	//Complete = C
 			ui_simple_add_log("DC\n", UI_SEND_COLOR);
 			dump_display_waiting--;
 		}
@@ -212,7 +212,7 @@ void simple_send_dump_screen()
 	{
 		bytes = display_compress_buffer_size - simple_dump_display_address;
 	}
-	uart_write_bytes(ComUart2.uart_id, display_snapshot_compress_buffer + address, bytes);
+	uart_write_bytes((uart_port_t)ComUart2.uart_id, display_snapshot_compress_buffer + address, bytes);
 	simple_dump_display_address += bytes;
 	sprintf(temp_string, "%d/%d bytes sent", (int)simple_dump_display_address, display_compress_buffer_size);
 	ui_simple_add_log(temp_string, UI_SEND_COLOR);
@@ -233,23 +233,23 @@ void simple_parse_command()
 		simple_dump_display_address = 0;
 		dump_display_sending = false;
 		dump_display_waiting = 0;
-		uart_write_bytes(ComUart2.uart_id, "DS\n", 3); // Start
+		uart_write_bytes((uart_port_t)ComUart2.uart_id, "DS\n", 3); // Start
 		if (display_dump_buffer())
 		{
 			sprintf(temp_string, "DN %d\n", display_compress_buffer_size); //Display Number = DN
-			uart_write_bytes(ComUart2.uart_id, temp_string, strlen(temp_string));
+			uart_write_bytes((uart_port_t)ComUart2.uart_id, temp_string, strlen(temp_string));
 			dump_display_waiting = WAITING_VALUE;
 			dump_display_sending = true;
 		}
 		else
 		{
-			uart_write_bytes(ComUart2.uart_id, "DE\n", 3); // ERROR
+			uart_write_bytes((uart_port_t)ComUart2.uart_id, "DE\n", 3); // ERROR
 		}
 		break;
 	case 'r':
 		dump_display_waiting = 0;
 		dump_display_sending = false;
-		uart_write_bytes(ComUart2.uart_id, "DU\n", 3); // Display stop by user
+		uart_write_bytes((uart_port_t)ComUart2.uart_id, "DU\n", 3); // Display stop by user
 		break;
 	case 'L': // Start sending Q string
 		index = atoi(command + 1);

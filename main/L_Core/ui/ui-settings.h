@@ -28,6 +28,7 @@ typedef struct
 	lv_obj_t* status;
 	lv_obj_t* autostart;
 	lv_obj_t* screen_control;
+	lv_obj_t* adc;
 } UI_BLUETOOTH;
 
 typedef struct

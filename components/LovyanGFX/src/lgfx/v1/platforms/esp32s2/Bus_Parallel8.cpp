@@ -79,23 +79,18 @@ namespace lgfx
                   ;
   }
 
-  static void _gpio_pin_init(int pin)
-  {
-    if (pin >= 0)
-    {
-      gpio_pad_select_gpio(pin);
-      gpio_hi(pin);
-      gpio_set_direction((gpio_num_t)pin, GPIO_MODE_OUTPUT);
-    }
-  }
-
   bool Bus_Parallel8::init(void)
   {
     _init_pin();
 
-    _gpio_pin_init(_cfg.pin_rd);
-    _gpio_pin_init(_cfg.pin_wr);
-    _gpio_pin_init(_cfg.pin_rs);
+    for (size_t i = 0; i < 3; ++i)
+    {
+      int32_t pin = _cfg.pin_ctrl[i];
+      if (pin < 0) { continue; }
+      gpio_pad_select_gpio(pin);
+      gpio_hi(pin);
+      gpio_set_direction((gpio_num_t)pin, GPIO_MODE_OUTPUT);
+    }
 
     auto idx_base = I2S0O_DATA_OUT15_IDX;
 
@@ -139,7 +134,11 @@ namespace lgfx
     i2s_dev->in_link.val = 0;
     i2s_dev->out_link.val = 0;
 
+#if defined ( I2S_TX_PCM_BYPASS )
     i2s_dev->conf1.val = I2S_TX_PCM_BYPASS | I2S_TX_STOP_EN;
+#else
+    i2s_dev->conf1.val = (BIT(3)) | I2S_TX_STOP_EN;
+#endif
     i2s_dev->conf2.val = I2S_LCD_EN;
     i2s_dev->conf_chan.val = 1 << I2S_TX_CHAN_MOD_S | 1 << I2S_RX_CHAN_MOD_S;
 

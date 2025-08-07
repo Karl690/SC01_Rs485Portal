@@ -156,14 +156,18 @@ namespace lgfx
       static constexpr const uint8_t rgb332sig_tbl[] = { 1, 0, 1, 0, 1, 2, 3, 4, 2, 3, 4, 5, 6, 5, 6, 7 };
       static constexpr const uint8_t rgb565sig_tbl[] = { 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7 };
       auto tbl = (pixel_bytes == 2) ? rgb565sig_tbl : rgb332sig_tbl;
-      auto sigs = lcd_periph_signals.panels[_cfg.port];
+#if SOC_LCDCAM_RGB_LCD_SUPPORTED
+      auto sigs = &lcd_periph_rgb_signals.panels[_cfg.port];
+#else
+      auto sigs = &lcd_periph_signals.panels[_cfg.port];
+#endif
       for (size_t i = 0; i < 16; i++) {
-        _gpio_pin_sig(_cfg.pin_data[i], sigs.data_sigs[tbl[i]]);
+        _gpio_pin_sig(_cfg.pin_data[i], sigs->data_sigs[tbl[i]]);
       }
-      _gpio_pin_sig(_cfg.pin_henable, sigs.de_sig);
-      _gpio_pin_sig(_cfg.pin_hsync, sigs.hsync_sig);
-      _gpio_pin_sig(_cfg.pin_vsync, sigs.vsync_sig);
-      _gpio_pin_sig(_cfg.pin_pclk, sigs.pclk_sig);
+      _gpio_pin_sig(_cfg.pin_henable, sigs->de_sig);
+      _gpio_pin_sig(_cfg.pin_hsync, sigs->hsync_sig);
+      _gpio_pin_sig(_cfg.pin_vsync, sigs->vsync_sig);
+      _gpio_pin_sig(_cfg.pin_pclk, sigs->pclk_sig);
     }
 
     // periph_module_enable(lcd_periph_signals.panels[_cfg.port].module);
@@ -298,12 +302,20 @@ namespace lgfx
     lcd_ctrl2.lcd_hsync_width = hsw - 1;
     lcd_ctrl2.lcd_hsync_idle_pol = _cfg.hsync_polarity;
     // lcd_ctrl2.lcd_hsync_position = 0;
+    lcd_ctrl2.lcd_de_idle_pol = _cfg.de_idle_high;
     dev->lcd_ctrl2.val = lcd_ctrl2.val;
 
     dev->lc_dma_int_ena.val = 1;
 
     int isr_flags = ESP_INTR_FLAG_INTRDISABLED | ESP_INTR_FLAG_SHARED;
-    esp_intr_alloc_intrstatus(lcd_periph_signals.panels[_cfg.port].irq_id, isr_flags,
+
+#if SOC_LCDCAM_RGB_LCD_SUPPORTED
+      auto sigs = &lcd_periph_rgb_signals.panels[_cfg.port];
+#else
+      auto sigs = &lcd_periph_signals.panels[_cfg.port];
+#endif
+
+    esp_intr_alloc_intrstatus(sigs->irq_id, isr_flags,
                                    (uint32_t)&dev->lc_dma_int_st,
                                     LCD_LL_EVENT_VSYNC_END, lcd_default_isr_handler, this, &_intr_handle);
     esp_intr_enable(_intr_handle);
@@ -322,6 +334,18 @@ namespace lgfx
 
   void Bus_RGB::release(void)
   {
+    if (_intr_handle) {
+      esp_intr_free(_intr_handle);
+    }
+    if (_i80_bus)
+    {
+      esp_lcd_del_i80_bus(_i80_bus);
+    }
+    if (_dmadesc)
+    {
+      heap_caps_free(_dmadesc);
+      _dmadesc = nullptr;
+    }
   }
 
 //----------------------------------------------------------------------------
